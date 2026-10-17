@@ -26,10 +26,10 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_admin' => 'boolean',
-            'is_disabled' => 'boolean',
-            'last_seen_at' => 'datetime',
+            'password'          => 'hashed',
+            'is_admin'          => 'boolean',
+            'is_disabled'       => 'boolean',
+            'last_seen_at'      => 'datetime',
         ];
     }
 
@@ -38,15 +38,35 @@ class User extends Authenticatable
         return $this->hasMany(File::class);
     }
 
-    public function getStorageUsedAttribute(): int
+    /**
+     * Total storage yang dipakai user (bytes).
+     * TIDAK pakai type-hint int — karena i386 32-bit bisa overflow > 2GB.
+     */
+    public function getStorageUsedAttribute()
     {
         return $this->files()->sum('size');
     }
 
-    public function getStorageQuotaAttribute(): int
+    /**
+     * Quota user dalam BYTES.
+     *
+     * PENTING: Kolom `quota` di DB menyimpan satuan MB (bukan bytes),
+     * karena server i386 32-bit max int = 2,147,483,647 (≈2GB).
+     * Saat dibaca, kita konversi MB → bytes (return float untuk antisipasi > 2GB).
+     */
+    public function getStorageQuotaAttribute()
     {
-        // Kalau admin set custom quota, pakai itu. Kalau tidak, default 2GB.
-        return $this->quota ?? (2 * 1024 * 1024 * 1024);
+        $quotaMb = $this->quota ?? 2048; // default 2GB = 2048 MB
+        return $quotaMb * 1048576;        // 1 MB = 1,048,576 bytes
+    }
+
+    /**
+     * Quota user dalam GB (untuk display admin panel).
+     */
+    public function getStorageQuotaGbAttribute(): float
+    {
+        $quotaMb = $this->quota ?? 2048;
+        return round($quotaMb / 1024, 2);
     }
 
     public function isAdmin(): bool
@@ -54,14 +74,22 @@ class User extends Authenticatable
         return $this->is_admin === true;
     }
 
-    public function hasExceededQuota(int $additionalBytes = 0): bool
+    /**
+     * Cek apakah user sudah melebihi quota.
+     * Tidak pakai type-hint int pada $additionalBytes (antisipasi overflow).
+     */
+    public function hasExceededQuota($additionalBytes = 0): bool
     {
         return ($this->storage_used + $additionalBytes) > $this->storage_quota;
     }
 
+    /**
+     * Persentase pemakaian quota (0-100).
+     */
     public function getQuotaPercentAttribute(): float
     {
-        if ($this->storage_quota <= 0) return 0;
-        return min(100, ($this->storage_used / $this->storage_quota) * 100);
+        $quota = $this->storage_quota;
+        if ($quota <= 0) return 0.0;
+        return min(100.0, ($this->storage_used / $quota) * 100);
     }
 }

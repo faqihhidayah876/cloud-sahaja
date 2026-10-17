@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Models\User;
@@ -32,11 +31,11 @@ class AdminController extends Controller
             });
 
         $stats = [
-            'total_users' => User::count(),
-            'total_files' => File::where('is_folder', false)->whereNull('deleted_at')->count(),
-            'total_size' => File::where('is_folder', false)->whereNull('deleted_at')->sum('size'),
+            'total_users'  => User::count(),
+            'total_files'  => File::where('is_folder', false)->whereNull('deleted_at')->count(),
+            'total_size'   => File::where('is_folder', false)->whereNull('deleted_at')->sum('size'),
             'total_shared' => File::whereNotNull('share_token')->count(),
-            'total_trash' => File::onlyTrashed()->count(),
+            'total_trash'  => File::onlyTrashed()->count(),
         ];
 
         $serverStorage = $this->getServerStorageStats();
@@ -45,22 +44,27 @@ class AdminController extends Controller
     }
 
     /**
-     * Mendapatkan statistik kapasitas server storage.
+     * Statistik kapasitas server storage.
      */
     protected function getServerStorageStats(): array
     {
         $storageRoot = storage_path('app');
         $diskTotal = @disk_total_space($storageRoot) ?: (100 * 1024 * 1024 * 1024);
-        $diskFree = @disk_free_space($storageRoot) ?: (50 * 1024 * 1024 * 1024);
-        $diskUsed = max(0, $diskTotal - $diskFree);
-        $diskUsedPercent = $diskTotal > 0 ? min(100, round(($diskUsed / $diskTotal) * 100, 1)) : 0;
+        $diskFree  = @disk_free_space($storageRoot) ?: (50 * 1024 * 1024 * 1024);
+        $diskUsed  = max(0, $diskTotal - $diskFree);
+        $diskUsedPercent = $diskTotal > 0
+            ? min(100, round(($diskUsed / $diskTotal) * 100, 1))
+            : 0;
 
-        // Hitung total ukuran file fisik di folder upload jika ada
+        // Hitung ukuran fisik file di folder upload
         $filesDir = storage_path('app/private/files');
         $actualPhysicalSize = 0;
+
         if (is_dir($filesDir)) {
             try {
-                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filesDir, \FilesystemIterator::SKIP_DOTS));
+                $iterator = new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator($filesDir, \FilesystemIterator::SKIP_DOTS)
+                );
                 foreach ($iterator as $f) {
                     if ($f->isFile()) {
                         $actualPhysicalSize += $f->getSize();
@@ -73,22 +77,30 @@ class AdminController extends Controller
             $actualPhysicalSize = File::where('is_folder', false)->sum('size');
         }
 
-        $totalAllocatedQuota = User::sum('quota');
-        $totalDatabaseSize = File::where('is_folder', false)->whereNull('deleted_at')->sum('size');
+        // Konversi total quota user (disimpan MB) ke bytes
+        $totalAllocatedQuotaMb = User::sum('quota');
+        $totalAllocatedQuota   = $totalAllocatedQuotaMb * 1048576;
+
+        $totalDatabaseSize = File::where('is_folder', false)
+            ->whereNull('deleted_at')
+            ->sum('size');
 
         return [
-            'disk_total' => $diskTotal,
-            'disk_free' => $diskFree,
-            'disk_used' => $diskUsed,
-            'disk_used_percent' => $diskUsedPercent,
-            'actual_physical_size' => $actualPhysicalSize,
+            'disk_total'            => $diskTotal,
+            'disk_free'             => $diskFree,
+            'disk_used'             => $diskUsed,
+            'disk_used_percent'     => $diskUsedPercent,
+            'actual_physical_size'  => $actualPhysicalSize,
             'total_allocated_quota' => $totalAllocatedQuota,
-            'total_database_size' => $totalDatabaseSize,
+            'total_database_size'   => $totalDatabaseSize,
         ];
     }
 
     /**
      * Update quota user.
+     *
+     * PENTING: Server i386 32-bit max int = 2,147,483,647 (≈2GB).
+     * Simpan quota dalam MB (bukan bytes) agar aman.
      */
     public function updateQuota(Request $request, $id)
     {
@@ -99,27 +111,29 @@ class AdminController extends Controller
 
             $user = User::findOrFail($id);
 
-            // Convert GB ke bytes
-            $bytes = (int) round($request->quota_gb * 1024 * 1024 * 1024);
-            $user->quota = $bytes;
+            // Konversi GB ke MB (aman untuk i386 32-bit)
+            $mb = (int) round($request->quota_gb * 1024);
+            $user->quota = $mb;
             $user->save();
 
             Log::info('Admin update quota', [
-                'admin_id' => Auth::id(),
+                'admin_id'       => Auth::id(),
                 'target_user_id' => $user->id,
-                'new_quota_bytes' => $bytes,
+                'new_quota_mb'   => $mb,
+                'new_quota_gb'   => $request->quota_gb,
             ]);
 
             return response()->json([
-                'success' => true,
-                'message' => 'Kuota berhasil diperbarui.',
+                'success'  => true,
+                'message'  => 'Kuota berhasil diperbarui.',
                 'quota_gb' => $request->quota_gb,
+                'quota_mb' => $mb,
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Nilai kuota tidak valid.',
-                'errors' => $e->errors(),
+                'errors'  => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             Log::error('Admin update quota error', [
@@ -129,7 +143,7 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui kuota.',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -153,7 +167,7 @@ class AdminController extends Controller
             $user->save();
 
             return response()->json([
-                'success' => true,
+                'success'     => true,
                 'is_disabled' => $user->is_disabled,
             ]);
         } catch (\Exception $e) {
@@ -179,7 +193,6 @@ class AdminController extends Controller
                 ], 400);
             }
 
-            // Hapus file fisik dulu
             $files = File::withTrashed()->where('user_id', $user->id)->get();
             foreach ($files as $file) {
                 if (!$file->is_folder && $file->existsOnDisk()) {
@@ -188,8 +201,8 @@ class AdminController extends Controller
             }
 
             Log::warning('Admin delete user', [
-                'admin_id' => Auth::id(),
-                'target_email' => $user->email,
+                'admin_id'      => Auth::id(),
+                'target_email'  => $user->email,
                 'files_deleted' => $files->count(),
             ]);
 
@@ -217,7 +230,7 @@ class AdminController extends Controller
     public function resetFiles($id)
     {
         try {
-            $user = User::findOrFail($id);
+            $user  = User::findOrFail($id);
             $files = File::withTrashed()->where('user_id', $user->id)->get();
 
             foreach ($files as $file) {

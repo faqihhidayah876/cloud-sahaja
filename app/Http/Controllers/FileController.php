@@ -19,6 +19,7 @@ class FileController extends Controller
         $userId = Auth::id();
         $category = $request->input('category', 'all');
         $folderId = $request->input('folder', null);
+        $search = $request->input('search', '');
         
         $query = File::where('user_id', $userId)
             ->whereNull('deleted_at') // exclude trash
@@ -30,8 +31,13 @@ class FileController extends Controller
         } else {
             $query->whereNull('parent_id');
         }
+
+        // Search filter (kalau ada)
+        if (!empty($search)) {
+            $query->where('original_name', 'LIKE', '%' . $search . '%');
+        }
         
-        if ($category !== 'all' && $category !== 'folder') {
+        if ($category !== 'all' && $category !== 'folder' && empty($search)) {
             $query->where('is_folder', false)
                   ->where(function ($q) use ($category) {
                       $mimes = match ($category) {
@@ -231,20 +237,31 @@ class FileController extends Controller
     /**
      * Generate / get link share.
      */
-    public function share($id)
+    public function share(Request $request, $id)
     {
         try {
             $file = File::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
-            
+
             if (!$file->share_token) {
                 $file->share_token = Str::random(32);
-                $file->save();
             }
-            
+
+            $expiry = $request->input('expiry', 'never');
+            $file->share_expires_at = match ($expiry) {
+                '1h'    => now()->addHour(),
+                '1d'    => now()->addDay(),
+                '7d'    => now()->addDays(7),
+                '30d'   => now()->addDays(30),
+                default => null,
+            };
+
+            $file->save();
+
             return response()->json([
                 'success' => true,
                 'url' => $file->share_url,
-                'is_public' => $file->is_public,
+                'expires_at' => $file->share_expires_at?->toIso8601String(),
+                'expires_human' => $file->share_expires_at?->diffForHumans(),
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal membuat link.'], 500);
@@ -259,6 +276,7 @@ class FileController extends Controller
         try {
             $file = File::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
             $file->share_token = null;
+            $file->share_expires_at = null;
             $file->is_public = false;
             $file->save();
             
@@ -274,11 +292,15 @@ class FileController extends Controller
     public function showShared($token)
     {
         $file = File::where('share_token', $token)->whereNull('deleted_at')->firstOrFail();
-        
+
+        if ($file->isShareExpired()) {
+            return response()->view('files.shared', compact('file'), 410);
+        }
+
         if (!$file->existsOnDisk()) {
             abort(404, 'File tidak tersedia.');
         }
-        
+
         return view('files.shared', compact('file'));
     }
 
@@ -288,11 +310,15 @@ class FileController extends Controller
     public function downloadShared($token)
     {
         $file = File::where('share_token', $token)->whereNull('deleted_at')->firstOrFail();
-        
+
+        if ($file->isShareExpired()) {
+            abort(410, 'Link sudah kadaluarsa.');
+        }
+
         if (!$file->existsOnDisk()) {
             abort(404, 'File tidak tersedia.');
         }
-        
+
         return Storage::disk('local')->download($file->storage_path, $file->original_name);
     }
 
@@ -450,7 +476,11 @@ class FileController extends Controller
      */
     public function previewShared($token)
     {
-        $file = File::where('share_token', $token)->firstOrFail();
+        $file = File::where('share_token', $token)->whereNull('deleted_at')->firstOrFail();
+
+        if ($file->isShareExpired()) {
+            abort(410, 'Link sudah kadaluarsa.');
+        }
 
         if ($file->is_folder || !$file->existsOnDisk()) {
             abort(404, 'File tidak ditemukan.');

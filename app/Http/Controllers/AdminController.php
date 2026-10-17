@@ -39,7 +39,52 @@ class AdminController extends Controller
             'total_trash' => File::onlyTrashed()->count(),
         ];
 
-        return view('admin.dashboard', compact('users', 'stats'));
+        $serverStorage = $this->getServerStorageStats();
+
+        return view('admin.dashboard', compact('users', 'stats', 'serverStorage'));
+    }
+
+    /**
+     * Mendapatkan statistik kapasitas server storage.
+     */
+    protected function getServerStorageStats(): array
+    {
+        $storageRoot = storage_path('app');
+        $diskTotal = @disk_total_space($storageRoot) ?: (100 * 1024 * 1024 * 1024);
+        $diskFree = @disk_free_space($storageRoot) ?: (50 * 1024 * 1024 * 1024);
+        $diskUsed = max(0, $diskTotal - $diskFree);
+        $diskUsedPercent = $diskTotal > 0 ? min(100, round(($diskUsed / $diskTotal) * 100, 1)) : 0;
+
+        // Hitung total ukuran file fisik di folder upload jika ada
+        $filesDir = storage_path('app/private/files');
+        $actualPhysicalSize = 0;
+        if (is_dir($filesDir)) {
+            try {
+                $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($filesDir, \FilesystemIterator::SKIP_DOTS));
+                foreach ($iterator as $f) {
+                    if ($f->isFile()) {
+                        $actualPhysicalSize += $f->getSize();
+                    }
+                }
+            } catch (\Exception $e) {
+                $actualPhysicalSize = File::where('is_folder', false)->sum('size');
+            }
+        } else {
+            $actualPhysicalSize = File::where('is_folder', false)->sum('size');
+        }
+
+        $totalAllocatedQuota = User::sum('quota');
+        $totalDatabaseSize = File::where('is_folder', false)->whereNull('deleted_at')->sum('size');
+
+        return [
+            'disk_total' => $diskTotal,
+            'disk_free' => $diskFree,
+            'disk_used' => $diskUsed,
+            'disk_used_percent' => $diskUsedPercent,
+            'actual_physical_size' => $actualPhysicalSize,
+            'total_allocated_quota' => $totalAllocatedQuota,
+            'total_database_size' => $totalDatabaseSize,
+        ];
     }
 
     /**
@@ -69,7 +114,7 @@ class AdminController extends Controller
                 'success' => true,
                 'message' => 'Kuota berhasil diperbarui.',
                 'quota_gb' => $request->quota_gb,
-            ]);
+            ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -84,6 +129,7 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui kuota.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

@@ -24,7 +24,7 @@
     <div class="auth-card">
         <div style="text-align: center; margin-bottom: 32px;">
             <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" 
-                 alt="Cloud Sahaja" style="width: 56px; height: 56px; border-radius: 12px; margin-bottom: 16px;">
+                 alt="Cloud Sahaja" style="width: 56px; height: 56px; border-radius: 12px; margin: 0 auto 16px; display: block;">
             <h1 style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em;">
                 Selamat Datang
             </h1>
@@ -48,7 +48,17 @@
             
             <div class="form-group">
                 <label>Password</label>
-                <input type="password" name="password" class="input" required>
+                <div style="position: relative;">
+                    <input type="password" name="password" id="passwordInput" class="input" required
+                           style="padding-right: 44px;">
+                    <button type="button" onclick="togglePassword('passwordInput', this)"
+                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+                                   background: none; border: none; color: var(--text-tertiary);
+                                   cursor: pointer; padding: 4px; width: 28px; height: 28px;
+                                   display: flex; align-items: center; justify-content: center;">
+                        <i class="far fa-eye"></i>
+                    </button>
+                </div>
                 @error('password') <div class="form-error">{{ $message }}</div> @enderror
             </div>
             
@@ -67,5 +77,19 @@
             </a>
         </div>
     </div>
+
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'far fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'far fa-eye';
+            }
+        }
+    </script>
 </body>
 </html>

@@ -17,8 +17,13 @@
         {{-- User dropdown --}}
         <div class="user-menu-wrapper">
             <button class="user-menu-btn">
-                <div class="user-avatar-sm">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                <div class="user-avatar-sm" id="headerUserAvatar">
+                    @if(Auth::user() && Auth::user()->avatar)
+                        <img src="{{ Auth::user()->avatar }}" alt="Avatar"
+                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    @endif
                 </div>
                 <span style="font-size: 13px; font-weight: 500;">
                     {{ Auth::user()->name ?? 'User' }}
@@ -26,7 +31,7 @@
                 <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
             </button>
             <div class="user-dropdown">
-                <a href="#" class="dropdown-item">
+                <a href="{{ route('profile.edit') }}" class="dropdown-item">
                     <i class="fas fa-user"></i> Profil
                 </a>
                 <a href="#" class="dropdown-item">

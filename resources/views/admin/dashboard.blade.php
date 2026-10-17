@@ -42,6 +42,36 @@
             <div class="stat-value">{{ $stats['total_shared'] }}</div>
             <div class="stat-desc">Link publik aktif</div>
         </div>
+
+        {{-- Server Storage Card (Spans 2 columns) --}}
+        <div class="stat-card stat-card-wide">
+            <div class="stat-header">
+                <span class="stat-label">Kapasitas Server Storage</span>
+                <i class="fas fa-server" style="color: var(--accent);"></i>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                <div class="stat-value" style="margin-bottom: 0;">
+                    {{ formatBytes($serverStorage['disk_used']) }}
+                    <span style="font-size: 14px; font-weight: 500; color: var(--text-secondary);">
+                        / {{ formatBytes($serverStorage['disk_total']) }}
+                    </span>
+                </div>
+                @php
+                    $serverPercent = $serverStorage['disk_used_percent'];
+                    $serverBarColor = $serverPercent >= 90 ? 'var(--danger)' : ($serverPercent >= 75 ? 'var(--warning)' : 'var(--accent)');
+                @endphp
+                <div style="font-size: 13px; font-weight: 600; color: {{ $serverBarColor }};">
+                    {{ $serverPercent }}% Terpakai
+                </div>
+            </div>
+            <div class="quota-bar" style="max-width: 100%; height: 8px; margin-bottom: 12px; background: var(--bg-base);">
+                <div class="quota-bar-fill" style="width: {{ $serverPercent }}%; background: {{ $serverBarColor }};"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--text-secondary);">
+                <span><i class="fas fa-hard-drive" style="margin-right: 4px; color: var(--text-tertiary);"></i> Sisa: {{ formatBytes($serverStorage['disk_free']) }}</span>
+                <span><i class="fas fa-layer-group" style="margin-right: 4px; color: var(--text-tertiary);"></i> Alokasi Kuota User: {{ formatBytes($serverStorage['total_allocated_quota']) }}</span>
+            </div>
+        </div>
     </div>
     
     {{-- Users Table --}}
@@ -238,14 +268,18 @@
         try {
             const res = await fetch('/admin/users/' + currentQuotaUserId + '/quota', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': CSRF,
+                },
                 body: JSON.stringify({ quota_gb: quotaGB }),
             });
             const data = await res.json();
-            if (data.success) {
+            if (res.ok && data.success) {
                 closeQuotaModal();
                 showToast('Kuota berhasil diubah', 'success');
-                setTimeout(() => window.location.reload(), 800);
+                setTimeout(() => window.location.reload(), 600);
             } else {
                 showToast(data.message || 'Gagal', 'error');
             }

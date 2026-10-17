@@ -20,6 +20,7 @@ class File extends Model
         'size',
         'extension',
         'share_token',
+        'share_expires_at',
         'is_public',
         'is_folder',
         'is_starred',
@@ -29,7 +30,15 @@ class File extends Model
         'is_public' => 'boolean',
         'is_folder' => 'boolean',
         'is_starred' => 'boolean',
+        'share_expires_at' => 'datetime',
     ];
+
+    public function isShareExpired(): bool
+    {
+        if (!$this->share_token) return true;
+        if (!$this->share_expires_at) return false;
+        return $this->share_expires_at->isPast();
+    }
 
     /**
      * Relasi ke user.

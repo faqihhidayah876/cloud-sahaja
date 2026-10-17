@@ -2,11 +2,15 @@
 
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('welcome');
+})->name('welcome');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -31,6 +35,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/files/{id}/share', [FileController::class, 'unshare'])->name('files.unshare');
     Route::post('/files/{id}/restore', [FileController::class, 'restore'])->name('files.restore');
     Route::delete('/files/{id}/force', [FileController::class, 'forceDelete'])->name('files.forceDelete');
+
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile/avatar', [ProfileController::class, 'deleteAvatar'])->name('profile.deleteAvatar');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Route publik untuk share link (di luar grup auth)

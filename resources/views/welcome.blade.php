@@ -159,25 +159,53 @@
         .welcome-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 20px;
             margin: 48px auto 64px;
-            max-width: 900px;
+            max-width: 960px;
         }
 
         .welcome-stat-card {
             background: var(--bg-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            padding: 20px;
+            padding: 24px 20px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .welcome-stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .welcome-stat-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-border);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+        }
+
+        .welcome-stat-card:hover::before {
+            opacity: 1;
         }
 
         .welcome-stat-number {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             font-family: var(--font-mono);
+            background: linear-gradient(135deg, var(--text-primary) 30%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .welcome-stat-label {
@@ -196,8 +224,8 @@
         }
 
         .welcome-section-title {
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 700;
             color: var(--text-primary);
             letter-spacing: -0.02em;
             margin-bottom: 8px;
@@ -206,50 +234,87 @@
         .welcome-section-desc {
             font-size: 14px;
             color: var(--text-secondary);
-            max-width: 540px;
+            max-width: 560px;
             margin: 0 auto;
+            line-height: 1.6;
         }
 
         /* Features Grid */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 24px;
         }
 
         .feature-card {
             background: var(--bg-elevated);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 28px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            transition: border-color var(--duration-base) var(--ease), background-color var(--duration-base) var(--ease);
+            gap: 18px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                        border-color 0.3s ease,
+                        background-color 0.3s ease,
+                        box-shadow 0.3s ease;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.35s ease;
         }
 
         .feature-card:hover {
-            border-color: var(--border-strong);
+            transform: translateY(-8px);
+            border-color: var(--accent);
             background: var(--bg-hover);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.12);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
         }
 
         .feature-icon-wrapper {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: var(--radius-md);
             background: var(--accent-subtle);
             color: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 20px;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon-wrapper {
+            transform: scale(1.15) rotate(-6deg);
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
         }
 
         .feature-title {
             font-size: 16px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .feature-card:hover .feature-title {
+            color: var(--accent);
         }
 
         .feature-text {
@@ -262,24 +327,39 @@
         .why-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            gap: 24px;
         }
 
         .why-card {
             background: var(--bg-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            padding: 24px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .why-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-border);
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.2);
         }
 
         .why-card-icon {
-            font-size: 20px;
+            font-size: 24px;
             color: var(--accent);
             margin-bottom: 16px;
+            display: inline-block;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .why-card:hover .why-card-icon {
+            transform: scale(1.2) translateY(-2px);
         }
 
         .why-card-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 8px;
@@ -334,9 +414,100 @@
                 font-size: 15px;
             }
         }
+
+        /* Hero Title Animation */
+        .welcome-title {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+            position: relative;
+        }
+
+        .welcome-title:hover {
+            transform: scale(1.04) translateY(-2px);
+            filter: drop-shadow(0 6px 24px rgba(59, 130, 246, 0.45));
+        }
+
+        .brand-gradient-text {
+            background: linear-gradient(135deg, #60A5FA 0%, #3B82F6 45%, #818CF8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        body.light-mode .brand-gradient-text {
+            background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 50%, #4F46E5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Cursor Follower - ONLY appears when hovering the hero title */
+        .custom-cursor-follower {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.32) 0%, rgba(96, 165, 250, 0.14) 55%, transparent 75%);
+            border: 2px solid rgba(96, 165, 250, 0.9);
+            box-shadow: 0 0 35px rgba(59, 130, 246, 0.5), inset 0 0 20px rgba(59, 130, 246, 0.25);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.3);
+            z-index: 99999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.25s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .custom-cursor-follower.cursor-expanded {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        body.light-mode .custom-cursor-follower {
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.28) 0%, rgba(59, 130, 246, 0.12) 55%, transparent 75%);
+            border: 2px solid rgba(37, 99, 235, 0.85);
+            box-shadow: 0 0 30px rgba(37, 99, 235, 0.3);
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .custom-cursor-follower {
+                display: none !important;
+            }
+        }
+
+        .animated-bg-glow {
+            position: fixed;
+            inset: -50%;
+            z-index: -1;
+            background: radial-gradient(circle at 30% 30%, var(--accent-subtle) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 70%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+            animation: bgRotate 20s linear infinite;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        body.light-mode .animated-bg-glow {
+            opacity: 0.3;
+        }
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="welcome-page">
+    <div class="custom-cursor-follower" id="cursorFollower"></div>
+    <div class="animated-bg-glow"></div>
+
     {{-- Header / Navbar --}}
     <header class="welcome-navbar">
         <a href="{{ route('welcome') }}" class="welcome-brand header-brand">
@@ -361,13 +532,13 @@
     <main class="welcome-container">
         {{-- Hero Section --}}
         <section class="welcome-hero">
-            <!-- <div class="welcome-pill">
-                <i class="fas fa-shield-halved"></i>
-                <span>Cloud Storage Pribadi untuk Anda</span>
-            </div> -->
+            {{-- <div class="welcome-pill">
+                <i class="fas fa-sparkles"></i>
+                <span>Platform Cloud Storage Modern & Cepat</span>
+            </div> --}}
 
-            <h1 class="welcome-title">
-                Cloud Sahaja — Penyimpanan Pribadi Anda
+            <h1 class="welcome-title" id="heroTitle">
+                <span class="brand-gradient-text">Cloud Sahaja</span> — Penyimpanan Pribadi Anda
             </h1>
 
             <p class="welcome-subtitle">
@@ -569,6 +740,49 @@
         }
 
         document.addEventListener('DOMContentLoaded', updateThemeIcon);
+
+        // Custom Cursor Follower Logic (Only visible on hero title hover)
+        (function() {
+            const cursor = document.getElementById('cursorFollower');
+            const heroTitle = document.getElementById('heroTitle');
+            if (!cursor || !heroTitle || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            let mouseX = -200, mouseY = -200;
+            let currentX = -200, currentY = -200;
+            let isMoving = false;
+
+            window.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (!isMoving) {
+                    currentX = mouseX;
+                    currentY = mouseY;
+                    isMoving = true;
+                }
+            });
+
+            function updateCursor() {
+                // Smooth interpolation (lerp)
+                currentX += (mouseX - currentX) * 0.22;
+                currentY += (mouseY - currentY) * 0.22;
+                cursor.style.left = currentX + 'px';
+                cursor.style.top = currentY + 'px';
+                requestAnimationFrame(updateCursor);
+            }
+            requestAnimationFrame(updateCursor);
+
+            heroTitle.addEventListener('mouseenter', function(e) {
+                currentX = e.clientX;
+                currentY = e.clientY;
+                cursor.style.left = currentX + 'px';
+                cursor.style.top = currentY + 'px';
+                cursor.classList.add('cursor-expanded');
+            });
+
+            heroTitle.addEventListener('mouseleave', function() {
+                cursor.classList.remove('cursor-expanded');
+            });
+        })();
     </script>
 </body>
 </html>

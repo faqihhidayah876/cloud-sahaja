@@ -48,6 +48,10 @@ Route::get('/share/{token}', [FileController::class, 'showShared'])->name('files
 Route::get('/share/{token}/preview', [FileController::class, 'previewShared'])->name('files.sharedPreview');
 Route::get('/share/{token}/download', [FileController::class, 'downloadShared'])->name('files.sharedDownload');
 
+// Google OAuth
+Route::get('auth/google', [\App\Http\Controllers\Auth\GoogleController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [\App\Http\Controllers\Auth\GoogleController::class, 'handleGoogleCallback']);
+
 // Admin Panel
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\AdminController::class, 'index'])->name('dashboard');

@@ -98,7 +98,7 @@
                 </button>
                 <button type="button" class="btn btn-secondary" 
                         id="deleteAvatarBtn"
-                        onclick="deleteAvatar()" 
+                        onclick="confirmDeleteAvatar()" 
                         style="color: var(--danger); display: {{ Auth::user()->avatar ? 'inline-flex' : 'none' }};">
                     <i class="fas fa-trash-can"></i> Hapus
                 </button>
@@ -262,6 +262,21 @@
     </div>
 </div>
 
+{{-- Delete Avatar Modal --}}
+<div class="modal-overlay" id="deleteAvatarModal">
+    <div class="modal-content">
+        <div class="modal-icon">
+            <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <h3 class="modal-title">Hapus Foto Profil?</h3>
+        <p class="modal-text">Foto profil akan dikembalikan ke inisial nama Anda.</p>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeDeleteAvatarModal()">Batal</button>
+            <button class="btn btn-danger" onclick="executeDeleteAvatar()">Ya, Hapus</button>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
     // ===== FOTO PROFIL UPLOAD & DELETE =====
@@ -350,10 +365,24 @@
         };
     }
 
-    function deleteAvatar() {
-        if (!confirm('Apakah Anda yakin ingin menghapus foto profil?')) {
-            return;
+    function confirmDeleteAvatar() {
+        const modal = document.getElementById('deleteAvatarModal');
+        if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
         }
+    }
+
+    function closeDeleteAvatarModal() {
+        const modal = document.getElementById('deleteAvatarModal');
+        if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    }
+
+    function executeDeleteAvatar() {
+        closeDeleteAvatarModal();
 
         fetch('{{ route("profile.deleteAvatar") }}', {
             method: 'DELETE',
@@ -379,6 +408,10 @@
         .catch(() => {
             showToast('Terjadi kesalahan saat menghapus foto profil', 'error');
         });
+    }
+
+    function deleteAvatar() {
+        confirmDeleteAvatar();
     }
 
     // ===== PASSWORD & MODAL HANDLERS =====
@@ -418,6 +451,12 @@
     document.getElementById('deleteAccountModal')?.addEventListener('click', (e) => {
         if (e.target.id === 'deleteAccountModal') {
             closeDeleteModal();
+        }
+    });
+
+    document.getElementById('deleteAvatarModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'deleteAvatarModal') {
+            closeDeleteAvatarModal();
         }
     });
 

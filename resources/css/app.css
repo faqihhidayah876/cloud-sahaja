@@ -176,6 +176,21 @@ button { cursor: pointer; border: none; background: none; color: inherit; font-f
     width: 100%;
 }
 
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 90;
+    opacity: 0;
+    transition: opacity 300ms var(--ease);
+}
+.sidebar-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+
 .sidebar {
     position: fixed;
     top: 0;
@@ -187,8 +202,8 @@ button { cursor: pointer; border: none; background: none; color: inherit; font-f
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    overflow-y: auto;
-    z-index: 40;
+    overflow-y: hidden;
+    z-index: 100;
 }
 
 .main-wrapper {
@@ -295,9 +310,11 @@ button { cursor: pointer; border: none; background: none; color: inherit; font-f
 }
 
 .sidebar-footer {
-    padding: 16px;
-    border-top: 1px solid var(--border-subtle);
     margin-top: auto;
+    background: var(--bg-subtle);
+    border-top: 1px solid var(--border-subtle);
+    padding: 16px;
+    z-index: 10;
 }
 
 .storage-bar {
@@ -315,6 +332,27 @@ button { cursor: pointer; border: none; background: none; color: inherit; font-f
 }
 
 /* ===== HEADER ===== */
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex-shrink: 1;
+}
+
+.brand-title {
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+    .brand-title {
+        display: none;
+    }
+}
 .mobile-toggle {
     display: none;
     width: 36px;

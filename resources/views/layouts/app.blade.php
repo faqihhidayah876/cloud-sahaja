@@ -19,10 +19,12 @@
         })();
     </script>
     
-    @vite(['resources/css/app.css'])
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
 </head>
 <body>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
     <div class="app-container">
         @include('partials.sidebar')
         

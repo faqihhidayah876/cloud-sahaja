@@ -45,18 +45,47 @@
             gap: 12px;
             text-decoration: none;
             color: var(--text-primary);
+            min-width: 0;
+            flex-shrink: 1;
         }
 
         .welcome-brand img {
             width: 34px;
             height: 34px;
             border-radius: var(--radius-sm);
+            flex-shrink: 0;
         }
 
         .welcome-brand-text {
             font-size: 16px;
             font-weight: 700;
             letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex-shrink: 1;
+        }
+
+        .brand-title {
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 480px) {
+            .brand-title,
+            .welcome-brand-text {
+                display: none;
+            }
         }
 
         .welcome-nav-actions {
@@ -310,9 +339,9 @@
 <body class="welcome-page">
     {{-- Header / Navbar --}}
     <header class="welcome-navbar">
-        <a href="{{ route('welcome') }}" class="welcome-brand">
+        <a href="{{ route('welcome') }}" class="welcome-brand header-brand">
             <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Cloud Sahaja Logo">
-            <span class="welcome-brand-text">Cloud Sahaja</span>
+            <span class="welcome-brand-text brand-title">Cloud Sahaja</span>
         </a>
 
         <div class="welcome-nav-actions">

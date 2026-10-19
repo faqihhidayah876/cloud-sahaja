@@ -81,7 +81,10 @@
     });
     
     // Mobile sidebar toggle
-    document.getElementById('mobileToggle')?.addEventListener('click', () => {
-        document.getElementById('sidebar')?.classList.toggle('mobile-open');
+    document.getElementById('mobileToggle')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (typeof openSidebar === 'function') {
+            openSidebar();
+        }
     });
 </script>

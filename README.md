@@ -1,58 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Cloud Sahaja Logo" width="120" />
 
-## About Laravel
+# ☁️ Cloud Sahaja
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Penyimpanan Awan Pribadi — Dibangun untuk Skala Kecil, Dioptimalkan untuk Keterbatasan.**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://sqlite.org)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white)](https://cloudflare.com)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+[Fitur](#-fitur-utama) • [Tech Stack](#-tech-stack) • [Instalasi](#-instalasi-lokal) • [Screenshot](#-screenshot)
 
-## Learning Laravel
+</div>
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📖 Tentang Project
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+**Cloud Sahaja** adalah aplikasi *cloud storage* (penyimpanan awan) pribadi berbasis web. Dibangun sebagai bagian dari ekosistem **SAHAJA AI**, project ini dirancang untuk berjalan dengan sangat ringan (mampu berjalan di server berspesifikasi rendah / *low-end hardware*).
 
-## Agentic Development
+Project ini mendemonstrasikan implementasi *full-stack web development*, mulai dari manajemen file, keamanan, hingga optimasi database untuk lingkungan terbatas.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## ✨ Fitur Utama
 
-```bash
-composer require laravel/boost --dev
+- 🔐 **Autentikasi Modern:** Login & Register menggunakan email, atau *One-Tap Login* via Google OAuth.
+- 🛡️ **Keamanan Ekstra:** Dilindungi oleh Cloudflare Turnstile (anti-bot / CAPTCHA).
+- 📂 **File Manager:** Upload, hapus, buat folder *nested* (bertingkat), dan filter file.
+- 👁️ **Preview Langsung:** Lihat file Gambar, PDF, Video, dan Teks langsung di browser tanpa perlu mengunduh.
+- 🔗 **Share Link dengan Kontrol:** Bagikan file ke publik dengan opsi masa aktif (expired) link.
+- 🗑️ **Sistem Sampah:** File yang dihapus masuk ke *Trash* terlebih dahulu (soft delete) dan bisa dipulihkan.
+- 👑 **Admin Panel:** Manajemen pengguna, monitoring *storage* hardisk server, dan pengaturan kuota per user secara *real-time*.
+- 🌓 **Dark/Light Mode:** Antarmuka responsif dengan *design system* yang konsisten.
 
-php artisan boost:install
-```
+---
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## 📸 Screenshot
 
-## Contributing
+<div align="center">
+  <img src="docs/1-welcome.png" alt="Welcome Page" width="800" style="border-radius: 10px; margin-bottom: 20px;" />
+  <p><em>Halaman Utama (Welcome Page) dengan desain minimalis</em></p>
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+  <img src="docs/2-files.png" alt="File Manager" width="800" style="border-radius: 10px; margin-bottom: 20px;" />
+  <p><em>File Manager dengan tampilan Grid & Breadcrumb</em></p>
+  
+  <img src="docs/3-admin.png" alt="Admin Dashboard" width="800" style="border-radius: 10px; margin-bottom: 20px;" />
+  <p><em>Admin Dashboard — Monitoring Server & Kuota</em></p>
+</div>
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🛠 Tech Stack
 
-## Security Vulnerabilities
+**Backend & Database:**
+- ⚙️ **Laravel 12.x** (PHP 8.2) — Framework utama.
+- 🗄️ **SQLite 3** — Database *file-based* dengan optimasi **WAL Mode** & `busy_timeout` untuk performa I/O rendah.
+- 🔑 **Laravel Socialite** — Integrasi Google OAuth.
+- 🔒 **Cloudflare Turnstile** — Validasi form anti-bot.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**Frontend:**
+- 🎨 **Tailwind CSS** — *Utility-first CSS framework*.
+- 🖼️ **Alpine.js** — Untuk interaksi UI ringan (Dropdown, Modal).
+- ✨ **Font Awesome 6** & **Google Fonts** (Inter, JetBrains Mono).
 
-## License
+**Infrastruktur & Deployment:**
+- 🐧 **Debian 12 (i386)** — Berjalan di *home server* lawas (RAM 2GB).
+- 🌐 **Nginx** + **PHP-FPM** (Dioptimalkan untuk memori rendah).
+- 🚇 **Cloudflare Tunnel** — Eksposur domain tanpa *port forwarding*.
+- 🔒 **Cloudflare SSL** — Enkripsi *end-to-end*.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 🚀 Instalasi Lokal
+
+Ingin menjalankan project ini di komputermu? Ikuti langkah ini:
+
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/faqihhidayah876/cloud-sahaja.git
+   cd cloud-sahaja
+   ```
+
+2. **Install dependensi Composer:**
+   ```bash
+   composer install
+   ```
+
+3. **Setup Environment:**
+   Salin file `.env.example` ke `.env`.
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Konfigurasi Database & API Keys:**
+   Buka `.env` dan sesuaikan:
+   - `DB_CONNECTION=sqlite` (Buat file `database/database.sqlite` manual).
+   - Masukkan `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`.
+   - Masukkan `TURNSTILE_SITE_KEY` & `TURNSTILE_SECRET_KEY`.
+
+5. **Migrasi Database & Storage Link:**
+   ```bash
+   php artisan migrate
+   php artisan storage:link
+   ```
+
+6. **Build Asset Frontend:**
+   ```bash
+   npm install
+   npm run build
+   ```
+
+7. **Jalankan Server:**
+   ```bash
+   php artisan serve
+   ```
+   Buka `http://127.0.0.1:8000`.
+
+---
+
+<div align="center">
+
+**Dibuat oleh: [Faqih Hidayah](https://github.com/faqihhidayah876)**
+
+*“Think Global, Act Local.”* 🇮🇩
+
+</div>

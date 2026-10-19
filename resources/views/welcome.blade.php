@@ -29,11 +29,37 @@
             color: var(--text-primary);
         }
 
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(11, 13, 18, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        :root.light-mode .site-header,
+        html.light-mode .site-header,
+        body.light-mode .site-header {
+            background: rgba(250, 251, 252, 0.8) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        html:not(.light-mode) .site-header {
+            background: rgba(11, 13, 18, 0.7) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+        }
+
         .welcome-navbar {
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
-            padding: 20px 24px;
+            padding: 16px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -91,7 +117,80 @@
         .welcome-nav-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+        }
+
+        .header-icon-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .header-icon-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+            border-color: var(--border-medium);
+            transform: translateY(-1px);
+        }
+
+        .header-icon-btn:active {
+            transform: translateY(0);
+        }
+
+        .header-icon-btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        .header-icon-btn-primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+        :root.light-mode .header-icon-btn,
+        html.light-mode .header-icon-btn,
+        body.light-mode .header-icon-btn {
+            background: #ffffff;
+            border-color: rgba(0, 0, 0, 0.1);
+            color: #4B5563;
+        }
+
+        :root.light-mode .header-icon-btn:hover,
+        html.light-mode .header-icon-btn:hover,
+        body.light-mode .header-icon-btn:hover {
+            background: #F3F4F6;
+            color: #111827;
+            border-color: rgba(0, 0, 0, 0.16);
+        }
+
+        :root.light-mode .header-icon-btn-primary,
+        html.light-mode .header-icon-btn-primary,
+        body.light-mode .header-icon-btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #ffffff;
+        }
+
+        :root.light-mode .header-icon-btn-primary:hover,
+        html.light-mode .header-icon-btn-primary:hover,
+        body.light-mode .header-icon-btn-primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .welcome-container {
@@ -102,8 +201,10 @@
         }
 
         /* Hero */
+        .hero-section,
         .welcome-hero {
-            padding: 64px 0 48px;
+            padding-top: 120px;
+            padding-bottom: 48px;
             text-align: center;
             max-width: 800px;
             margin: 0 auto;
@@ -509,36 +610,38 @@
     <div class="animated-bg-glow"></div>
 
     {{-- Header / Navbar --}}
-    <header class="welcome-navbar">
-        <a href="{{ route('welcome') }}" class="welcome-brand header-brand">
-            <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Cloud Sahaja Logo">
-            <span class="welcome-brand-text brand-title">Cloud Sahaja</span>
-        </a>
+    <header class="site-header">
+        <div class="welcome-navbar">
+            <a href="{{ route('welcome') }}" class="welcome-brand header-brand">
+                <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Cloud Sahaja Logo">
+                <span class="welcome-brand-text brand-title">Cloud Sahaja</span>
+            </a>
 
-        <div class="welcome-nav-actions">
-            <button type="button" class="btn btn-secondary" onclick="toggleTheme()" title="Ubah Tema" style="width: 40px; padding: 0;">
-                <i class="fas fa-sun" id="themeIcon"></i>
-            </button>
-            <a href="{{ route('login') }}" class="btn btn-secondary">
-                Masuk
-            </a>
-            <a href="{{ route('register') }}" class="btn btn-primary">
-                Mulai Gratis
-            </a>
+            <div class="welcome-nav-actions">
+                <button type="button" class="header-icon-btn" onclick="toggleTheme()" title="Ubah Tema" aria-label="Ubah Tema">
+                    <i class="fas fa-sun" id="themeIcon"></i>
+                </button>
+                <a href="{{ route('register') }}" class="header-icon-btn header-icon-btn-primary" title="Mulai Gratis / Daftar Akun" aria-label="Mulai Gratis">
+                    <i class="fas fa-user-plus"></i>
+                </a>
+            </div>
         </div>
     </header>
 
     {{-- Main Content --}}
     <main class="welcome-container">
         {{-- Hero Section --}}
-        <section class="welcome-hero">
+        <section class="welcome-hero hero-section">
             {{-- <div class="welcome-pill">
                 <i class="fas fa-sparkles"></i>
                 <span>Platform Cloud Storage Modern & Cepat</span>
             </div> --}}
 
-            <h1 class="welcome-title" id="heroTitle">
-                <span class="brand-gradient-text">Cloud Sahaja</span> — Penyimpanan Pribadi Anda
+            <h1 class="welcome-title hero-title" id="heroTitle" style="line-height: 1.2;">
+                <span class="brand-gradient-text" style="color: var(--accent);">Cloud Sahaja</span>
+                <span style="display: block; font-size: 0.5em; font-weight: 500; color: var(--text-secondary); margin-top: 8px;">
+                    Penyimpanan Pribadi Anda
+                </span>
             </h1>
 
             <p class="welcome-subtitle">
@@ -734,12 +837,20 @@
         function toggleTheme() {
             const html = document.documentElement;
             html.classList.toggle('light-mode');
+            if (document.body) {
+                document.body.classList.toggle('light-mode');
+            }
             const isLight = html.classList.contains('light-mode');
             localStorage.setItem('cloud-sahaja-theme', isLight ? 'light' : 'dark');
             updateThemeIcon();
         }
 
-        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.documentElement.classList.contains('light-mode')) {
+                if (document.body) document.body.classList.add('light-mode');
+            }
+            updateThemeIcon();
+        });
 
         // Custom Cursor Follower Logic (Only visible on hero title hover)
         (function() {

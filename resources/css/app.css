@@ -2014,3 +2014,115 @@ body.light-mode .animated-bg-glow {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* =====================================================================
+   Welcome Page Header (Fixed Glassmorphism) & Turnstile Responsive
+   ===================================================================== */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(11, 13, 18, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+:root.light-mode .site-header,
+html.light-mode .site-header,
+body.light-mode .site-header {
+    background: rgba(250, 251, 252, 0.8) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+html:not(.light-mode) .site-header {
+    background: rgba(11, 13, 18, 0.7) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+}
+
+.header-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.header-icon-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border-color: var(--border-medium);
+    transform: translateY(-1px);
+}
+
+.header-icon-btn:active {
+    transform: translateY(0);
+}
+
+.header-icon-btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+}
+
+.header-icon-btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+
+:root.light-mode .header-icon-btn,
+html.light-mode .header-icon-btn,
+body.light-mode .header-icon-btn {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #4B5563;
+}
+
+:root.light-mode .header-icon-btn:hover,
+html.light-mode .header-icon-btn:hover,
+body.light-mode .header-icon-btn:hover {
+    background: #F3F4F6;
+    color: #111827;
+    border-color: rgba(0, 0, 0, 0.16);
+}
+
+:root.light-mode .header-icon-btn-primary,
+html.light-mode .header-icon-btn-primary,
+body.light-mode .header-icon-btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+}
+
+:root.light-mode .header-icon-btn-primary:hover,
+html.light-mode .header-icon-btn-primary:hover,
+body.light-mode .header-icon-btn-primary:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.hero-section {
+    padding-top: 120px;
+}
+
+.cf-turnstile {
+    max-width: 100%;
+}
+
+

@@ -22,7 +22,11 @@
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;">
-    <div class="auth-card">
+    <div class="auth-card" style="position: relative;">
+        <button type="button" class="header-icon-btn" onclick="toggleAuthTheme()" title="Ubah Tema"
+                style="position: absolute; top: 16px; right: 16px; width: 34px; height: 34px;">
+            <i class="fas fa-sun" id="themeIcon"></i>
+        </button>
         <div style="text-align: center; margin-bottom: 32px;">
             <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png"
                  alt="Cloud Sahaja" style="width: 56px; height: 56px; border-radius: 12px; margin: 0 auto 16px; display: block;">
@@ -81,7 +85,21 @@
                 @error('password_confirmation') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" style="margin-bottom: 16px;"></div>
+            <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px; overflow: hidden;">
+                <div class="cf-turnstile" id="cfTurnstile"
+                     data-sitekey="{{ config('services.turnstile.site_key') }}"
+                     data-size="flexible"></div>
+            </div>
+            <script>
+                (function() {
+                    const isLight = localStorage.getItem('cloud-sahaja-theme') === 'light' || document.documentElement.classList.contains('light-mode');
+                    const widget = document.getElementById('cfTurnstile');
+                    if (widget) {
+                        widget.setAttribute('data-theme', isLight ? 'light' : 'dark');
+                    }
+                })();
+            </script>
+            @error('cf-turnstile-response') <div class="form-error" style="margin-top: -8px; margin-bottom: 12px; text-align: center;">{{ $message }}</div> @enderror
 
             <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">
                 Daftar
@@ -122,6 +140,46 @@
                 icon.className = 'far fa-eye';
             }
         }
+
+        function updateThemeIcon() {
+            const isLight = document.documentElement.classList.contains('light-mode');
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+            }
+        }
+
+        function toggleAuthTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('light-mode');
+            if (document.body) {
+                document.body.classList.toggle('light-mode');
+            }
+            const isLight = html.classList.contains('light-mode');
+            localStorage.setItem('cloud-sahaja-theme', isLight ? 'light' : 'dark');
+            updateThemeIcon();
+
+            const widget = document.getElementById('cfTurnstile');
+            if (widget && window.turnstile) {
+                try {
+                    widget.innerHTML = '';
+                    window.turnstile.render(widget, {
+                        sitekey: '{{ config('services.turnstile.site_key') }}',
+                        size: 'flexible',
+                        theme: isLight ? 'light' : 'dark'
+                    });
+                } catch (e) {
+                    widget.setAttribute('data-theme', isLight ? 'light' : 'dark');
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.documentElement.classList.contains('light-mode')) {
+                if (document.body) document.body.classList.add('light-mode');
+            }
+            updateThemeIcon();
+        });
     </script>
 </body>
 </html>

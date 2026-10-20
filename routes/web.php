@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // File Manager - Specific / static routes first
     Route::get('/files', [FileController::class, 'index'])->name('files.index');
     Route::post('/files', [FileController::class, 'store'])->name('files.store');
+    Route::post('/files/chunk', [FileController::class, 'uploadChunk'])->name('files.uploadChunk');
     Route::post('/files/folder', [FileController::class, 'createFolder'])->name('files.createFolder');
     Route::get('/files/starred', [FileController::class, 'starredIndex'])->name('files.starred');
     Route::get('/files/trash', [FileController::class, 'trashIndex'])->name('files.trash');

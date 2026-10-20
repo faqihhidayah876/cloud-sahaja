@@ -678,43 +678,62 @@
             <div class="progress-bar"><div class="progress-bar-fill" style="width: 0%"></div></div>
         `;
         document.getElementById('uploadProgressList').appendChild(progressEl);
-        
-        const formData = new FormData();
-        formData.append('file', file);
-        if (CURRENT_FOLDER) formData.append('parent_id', CURRENT_FOLDER);
-        
+
+        const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB per chunk (Aman dari limit Cloudflare)
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+        const uploadId = Date.now() + '-' + Math.random().toString(36).substring(7);
+
+        let uploadedSize = 0;
+        const progressBar = progressEl.querySelector('.progress-bar-fill');
+        const progressStatus = progressEl.querySelector('.progress-status');
+
         try {
-            const xhr = new XMLHttpRequest();
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable) {
-                    const percent = (e.loaded / e.total) * 100;
-                    progressEl.querySelector('.progress-bar-fill').style.width = percent + '%';
-                    progressEl.querySelector('.progress-status').textContent = Math.round(percent) + '%';
-                }
-            });
-            
-            const response = await new Promise((resolve, reject) => {
-                xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
-                    else { try { reject(JSON.parse(xhr.responseText)); } catch (e) { reject({ message: 'Upload gagal' }); } }
-                };
-                xhr.onerror = () => reject({ message: 'Koneksi terputus' });
-                xhr.open('POST', '{{ route('files.store') }}');
-                xhr.setRequestHeader('X-CSRF-TOKEN', CSRF);
-                xhr.setRequestHeader('Accept', 'application/json');
-                xhr.send(formData);
-            });
-            
-            if (response.success) {
-                progressEl.classList.add('success');
-                progressEl.querySelector('.progress-status').innerHTML = '<i class="fas fa-check"></i>';
-                setTimeout(() => { progressEl.remove(); window.location.reload(); }, 800);
-            } else {
-                throw response;
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, file.size);
+                const chunk = file.slice(start, end);
+
+                const formData = new FormData();
+                formData.append('file', chunk);
+                formData.append('chunk_index', i);
+                formData.append('total_chunks', totalChunks);
+                formData.append('file_name', file.name);
+                formData.append('upload_id', uploadId);
+                if (CURRENT_FOLDER) formData.append('parent_id', CURRENT_FOLDER);
+
+                const response = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '{{ route('files.uploadChunk') }}');
+                    xhr.setRequestHeader('X-CSRF-TOKEN', CSRF);
+                    xhr.setRequestHeader('Accept', 'application/json');
+                    
+                    xhr.onload = () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            resolve(JSON.parse(xhr.responseText));
+                        } else {
+                            try { reject(JSON.parse(xhr.responseText)); } 
+                            catch (e) { reject({ message: 'Upload chunk gagal' }); }
+                        }
+                    };
+                    xhr.onerror = () => reject({ message: 'Koneksi terputus saat mengirim chunk' });
+                    xhr.send(formData);
+                });
+
+                if (!response.success) throw response;
+
+                uploadedSize += chunk.size;
+                const percent = Math.round((uploadedSize / file.size) * 100);
+                progressBar.style.width = percent + '%';
+                progressStatus.textContent = percent + '%';
             }
+
+            progressEl.classList.add('success');
+            progressStatus.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => { progressEl.remove(); window.location.reload(); }, 800);
+
         } catch (err) {
             progressEl.classList.add('error');
-            progressEl.querySelector('.progress-status').innerHTML = '<i class="fas fa-times"></i> ' + (err.message || 'Gagal');
+            progressStatus.innerHTML = '<i class="fas fa-times"></i> ' + (err.message || 'Gagal');
             setTimeout(() => progressEl.remove(), 3000);
         }
     }

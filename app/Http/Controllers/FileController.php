@@ -158,6 +158,120 @@ class FileController extends Controller
     }
 
     /**
+     * Handle chunked upload for large files.
+     */
+    public function uploadChunk(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|file',
+                'chunk_index' => 'required|integer',
+                'total_chunks' => 'required|integer',
+                'file_name' => 'required|string',
+                'upload_id' => 'required|string',
+                'parent_id' => 'nullable|exists:files,id',
+            ]);
+
+            $chunk = $request->file('file');
+            $chunkIndex = $request->chunk_index;
+            $totalChunks = $request->total_chunks;
+            $uploadId = $request->upload_id;
+            $fileName = $request->file_name;
+            
+            // Folder sementara untuk menyimpan potongan
+            $chunkDir = storage_path('app/chunks/' . $uploadId);
+            if (!file_exists($chunkDir)) {
+                mkdir($chunkDir, 0775, true);
+            }
+
+            // Simpan potongan file
+            $chunk->move($chunkDir, $chunkIndex . '.part');
+
+            // Jika ini adalah potongan terakhir, gabungkan semuanya
+            if ($chunkIndex == $totalChunks - 1) {
+                $finalFilePath = $chunkDir . '/' . $fileName;
+                $out = fopen($finalFilePath, 'wb');
+
+                if ($out === false) {
+                    throw new \Exception('Gagal membuka file untuk digabungkan.');
+                }
+
+                for ($i = 0; $i < $totalChunks; $i++) {
+                    $chunkPath = $chunkDir . '/' . $i . '.part';
+                    $in = fopen($chunkPath, 'rb');
+                    while ($buff = fread($in, 4096)) {
+                        fwrite($out, $buff);
+                    }
+                    fclose($in);
+                    unlink($chunkPath); // Hapus file part setelah digabung
+                }
+                fclose($out);
+
+                // Setelah digabung, kita simpan permanen menggunakan logic yang ada di method store()
+                // Kita buat instance UploadedFile palsu dari file yang sudah digabung
+                $mergedFile = new \Illuminate\Http\UploadedFile(
+                    $finalFilePath,
+                    $fileName,
+                    mime_content_type($finalFilePath),
+                    null,
+                    true // test mode
+                );
+
+                // Panggil logic store bawaan (atau pindahkan logic store ke method helper)
+                // Untuk simplifikasi, kita duplikasi logic validasi & penyimpanan di sini:
+                $userId = Auth::id();
+                $currentUsage = File::where('user_id', $userId)->whereNull('deleted_at')->where('is_folder', false)->sum('size');
+                $quota = Auth::user()->storage_quota;
+                $fileSize = $mergedFile->getSize();
+
+                if ($currentUsage + $fileSize > $quota) {
+                    \Illuminate\Support\Facades\File::deleteDirectory($chunkDir);
+                    return response()->json(['success' => false, 'message' => 'Kuota penyimpanan tidak cukup.'], 400);
+                }
+
+                $extension = $mergedFile->getClientOriginalExtension();
+                $storedName = \Str::uuid() . ($extension ? '.' . $extension : '');
+                $path = 'files/' . $userId;
+                
+                // Pindahkan file gabungan ke folder private storage
+                $mergedFile->storeAs($path, $storedName, 'local');
+
+                $file = File::create([
+                    'user_id' => $userId,
+                    'parent_id' => $request->parent_id,
+                    'original_name' => $fileName,
+                    'stored_name' => $storedName,
+                    'mime_type' => $mergedFile->getMimeType(),
+                    'size' => $fileSize,
+                    'extension' => $extension,
+                    'is_folder' => false,
+                ]);
+
+                // Bersihkan folder chunk
+                \Illuminate\Support\Facades\File::deleteDirectory($chunkDir);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'File berhasil diupload.',
+                    'file' => [
+                        'id' => $file->id,
+                        'name' => $file->original_name,
+                        'size' => $file->human_size,
+                        'icon' => $file->icon,
+                        'icon_color' => $file->icon_color,
+                    ],
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Chunk uploaded']);
+
+        } catch (\Exception $e) {
+            Log::error('Chunk upload error', ['message' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Gagal upload chunk: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Buat folder baru.
      */
     public function createFolder(Request $request)

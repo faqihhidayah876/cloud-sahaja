@@ -3,115 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Cloud Sahaja</title>
+    <title>Masuk — Cloud Sahaja</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    {{-- Theme init anti-FOUC --}}
     <script>
         (function() {
-            if (localStorage.getItem('cloud-sahaja-theme') === 'light') {
+            const savedTheme = localStorage.getItem('cloud-sahaja-theme');
+            if (savedTheme === 'light' || (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches)) {
                 document.documentElement.classList.add('light-mode');
             }
         })();
     </script>
-
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoaded&render=explicit" async defer></script>
     @vite(['resources/css/app.css'])
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-<body class="auth-body" style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;">
-    <div class="auth-card" style="position: relative;">
-        <button type="button" class="header-icon-btn" onclick="toggleAuthTheme()" title="Ubah Tema"
-                style="position: absolute; top: 16px; right: 16px; width: 34px; height: 34px;">
-            <i class="fas fa-sun" id="themeIcon"></i>
-        </button>
-
-        <div style="text-align: center; margin-bottom: 32px;">
-            <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png"
-                 alt="Cloud Sahaja" style="width: 56px; height: 56px; border-radius: 12px; margin: 0 auto 16px; display: block;">
-            <h1 style="font-size: 24px; font-weight: 600; letter-spacing: -0.02em;">
-                Selamat Datang
-            </h1>
-            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 6px;">
-                Masuk ke Cloud Sahaja
-            </p>
+<body>
+    <div class="auth-container">
+        <!-- Sisi Kiri (Visual) -->
+        <div class="auth-visual">
+            <div class="auth-visual-brand">
+                <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Logo">
+                <span>Cloud Sahaja</span>
+            </div>
+            <div class="auth-visual-content">
+                <h1>Simpan Data.<br>Akses Tanpa Batas.</h1>
+                <p>Penyimpanan awan pribadi yang dibangun untuk kecepatan, keamanan, dan privasi. Dibuat untuk mahasiswa, developer, dan tim kecil.</p>
+            </div>
+            <div style="font-size: 12px; opacity: 0.5; z-index: 2;">© {{ date('Y') }} Cloud Sahaja.</div>
         </div>
 
-        @if (session('status'))
-            <div class="alert-success">{{ session('status') }}</div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" class="input" value="{{ old('email') }}" required autofocus>
-                @error('email') <div class="form-error">{{ $message }}</div> @enderror
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <div style="position: relative;">
-                    <input type="password" name="password" id="passwordInput" class="input" required
-                           style="padding-right: 44px;">
-                    <button type="button" onclick="togglePassword('passwordInput', this)"
-                            style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-                                   background: none; border: none; color: var(--text-tertiary);
-                                   cursor: pointer; padding: 4px; width: 28px; height: 28px;
-                                   display: flex; align-items: center; justify-content: center;">
-                        <i class="far fa-eye"></i>
-                    </button>
-                </div>
-                @error('password') <div class="form-error">{{ $message }}</div> @enderror
-            </div>
-
-            <div class="turnstile-container">
-                <div class="cf-turnstile" id="cfTurnstile"
-                     data-sitekey="{{ config('services.turnstile.site_key') }}"
-                     data-size="flexible"></div>
-            </div>
-            <script>
-                (function() {
-                    const isLight = localStorage.getItem('cloud-sahaja-theme') === 'light' || document.documentElement.classList.contains('light-mode');
-                    const widget = document.getElementById('cfTurnstile');
-                    if (widget) {
-                        widget.setAttribute('data-theme', isLight ? 'light' : 'dark');
-                    }
-                })();
-            </script>
-            @error('cf-turnstile-response') <div class="form-error" style="margin-top: -8px; margin-bottom: 12px; text-align: center;">{{ $message }}</div> @enderror
-
-            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:8px;">
-                Masuk
+        <!-- Sisi Kanan (Form) -->
+        <div class="auth-form-wrapper">
+            <button type="button" class="auth-theme-btn" onclick="toggleAuthTheme()" title="Ubah Tema" aria-label="Ubah Tema">
+                <i class="fas fa-sun" id="themeIcon"></i>
             </button>
-        </form>
 
-        <div style="display: flex; align-items: center; margin: 20px 0; gap: 12px; color: var(--text-tertiary); font-size: 12px;">
-            <span style="flex: 1; height: 1px; background: var(--border-subtle);"></span>
-            <span>atau</span>
-            <span style="flex: 1; height: 1px; background: var(--border-subtle);"></span>
-        </div>
+            <div class="auth-form-box">
+                <div class="auth-header">
+                    <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Cloud Sahaja Logo">
+                    <h2>Selamat Datang Kembali</h2>
+                    <p>Masuk ke akun Cloud Sahaja Anda</p>
+                </div>
 
-        <a href="{{ route('auth.google') }}" class="btn btn-secondary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
-            Masuk dengan Google
-        </a>
+                @if (session('status'))
+                    <div class="alert-success" style="margin-bottom:10px;">{{ session('status') }}</div>
+                @endif
 
-        <div style="text-align: center; margin-top: 24px; font-size: 13px; color: var(--text-secondary);">
-            Belum punya akun? <a href="{{ route('register') }}" style="color: var(--accent); font-weight: 500;">Daftar</a>
-        </div>
+                <form method="POST" action="{{ route('login') }}" class="auth-form">
+                    @csrf
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="input" value="{{ old('email') }}" required autofocus placeholder="nama@email.com">
+                        @error('email') <div class="form-error">{{ $message }}</div> @enderror
+                    </div>
 
-        <div style="text-align: center; margin-top: 12px; font-size: 13px;">
-            <a href="{{ route('welcome') }}" style="color: var(--text-tertiary);">
-                <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-            </a>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="passwordInput" class="input" required placeholder="••••••••">
+                            <button type="button" class="password-toggle" onclick="togglePassword('passwordInput', this)">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        @error('password') <div class="form-error">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="turnstile-wrapper">
+                        <div id="turnstileContainer" style="width: 100%;"></div>
+                    </div>
+                    @error('cf-turnstile-response') <div class="form-error" style="text-align:center;">{{ $message }}</div> @enderror
+
+                    <button type="submit" class="btn-auth">Masuk</button>
+                </form>
+
+                <div class="divider">atau</div>
+
+                <a href="{{ route('auth.google') }}" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google">
+                    Masuk dengan Google
+                </a>
+
+                <div class="auth-footer">
+                    Belum punya akun? <a href="{{ route('register') }}">Daftar</a>
+                </div>
+                
+                <a href="{{ route('welcome') }}" class="back-home">
+                    <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
+        let turnstileWidgetId = null;
+
+        window.onTurnstileLoaded = function() {
+            renderTurnstile();
+        };
+
+        function renderTurnstile() {
+            const container = document.getElementById('turnstileContainer');
+            if (!container || typeof turnstile === 'undefined') return;
+
+            if (turnstileWidgetId !== null) {
+                try {
+                    turnstile.remove(turnstileWidgetId);
+                } catch(e) {}
+                turnstileWidgetId = null;
+            }
+
+            container.innerHTML = '';
+            const isLight = document.documentElement.classList.contains('light-mode');
+
+            try {
+                turnstileWidgetId = turnstile.render('#turnstileContainer', {
+                    sitekey: "{{ config('services.turnstile.site_key') }}",
+                    theme: isLight ? 'light' : 'dark',
+                    size: 'flexible'
+                });
+            } catch(e) {
+                console.error('Turnstile render error:', e);
+            }
+        }
+
+        function updateThemeIcon() {
+            const isLight = document.documentElement.classList.contains('light-mode');
+            const icon = document.getElementById('themeIcon');
+            if (icon) icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        function toggleAuthTheme() {
+            const isLight = document.documentElement.classList.toggle('light-mode');
+            localStorage.setItem('cloud-sahaja-theme', isLight ? 'light' : 'dark');
+            updateThemeIcon();
+            renderTurnstile();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateThemeIcon();
+            if (typeof turnstile !== 'undefined' && turnstile.render && turnstileWidgetId === null) {
+                renderTurnstile();
+            }
+        });
+
         function togglePassword(inputId, btn) {
             const input = document.getElementById(inputId);
             const icon = btn.querySelector('i');
@@ -123,46 +159,6 @@
                 icon.className = 'far fa-eye';
             }
         }
-
-        function updateThemeIcon() {
-            const isLight = document.documentElement.classList.contains('light-mode');
-            const icon = document.getElementById('themeIcon');
-            if (icon) {
-                icon.className = isLight ? 'fas fa-moon' : 'fas fa-sun';
-            }
-        }
-
-        function toggleAuthTheme() {
-            const html = document.documentElement;
-            html.classList.toggle('light-mode');
-            if (document.body) {
-                document.body.classList.toggle('light-mode');
-            }
-            const isLight = html.classList.contains('light-mode');
-            localStorage.setItem('cloud-sahaja-theme', isLight ? 'light' : 'dark');
-            updateThemeIcon();
-
-            const widget = document.getElementById('cfTurnstile');
-            if (widget && window.turnstile) {
-                try {
-                    widget.innerHTML = '';
-                    window.turnstile.render(widget, {
-                        sitekey: '{{ config('services.turnstile.site_key') }}',
-                        size: 'flexible',
-                        theme: isLight ? 'light' : 'dark'
-                    });
-                } catch (e) {
-                    widget.setAttribute('data-theme', isLight ? 'light' : 'dark');
-                }
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            if (document.documentElement.classList.contains('light-mode')) {
-                if (document.body) document.body.classList.add('light-mode');
-            }
-            updateThemeIcon();
-        });
     </script>
 </body>
 </html>

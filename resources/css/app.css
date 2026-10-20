@@ -2507,6 +2507,329 @@ body.light-mode .header-icon-btn-primary:hover {
     .footer-inner { flex-direction: column; text-align: center; }
 }
 
+/* ===== AUTH SPLIT SCREEN ===== */
+.auth-container {
+    display: flex;
+    height: 100vh;
+    min-height: 100vh;
+    width: 100%;
+    background: var(--bg-base);
+    overflow: hidden;
+}
+
+/* Sisi Kiri (Visual) */
+.auth-visual {
+    flex: 1.15;
+    height: 100vh;
+    background: linear-gradient(135deg, rgba(11, 13, 18, 0.9), rgba(30, 41, 59, 0.8)), 
+                url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop') center/cover;
+    padding: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-visual-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 19px;
+    font-weight: 700;
+    z-index: 2;
+}
+
+.auth-visual-brand img {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.auth-visual-content {
+    z-index: 2;
+    max-width: 460px;
+}
+
+.auth-visual-content h1 {
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 14px;
+}
+
+.auth-visual-content p {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.6;
+}
+
+/* Sisi Kanan (Form) */
+.auth-form-wrapper {
+    flex: 1;
+    height: 100vh;
+    max-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 36px 24px 20px;
+    background: var(--bg-base);
+    position: relative;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.auth-theme-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.auth-theme-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+    border-color: var(--border-medium);
+}
+
+.auth-form-box {
+    width: 100%;
+    max-width: 380px;
+    margin: auto 0;
+}
+
+.auth-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.auth-header img {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 6px;
+    border-radius: 10px;
+    display: block;
+}
+
+.auth-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+.auth-header p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* Form Elements */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.form-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper .input,
+.form-group .input {
+    height: 38px;
+    font-size: 13.5px;
+    padding: 0 12px;
+}
+
+.input-wrapper .input {
+    padding-right: 40px;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 15px;
+}
+
+/* Turnstile Wrapper (Full-width matching inputs) */
+.turnstile-wrapper {
+    width: 100%;
+    margin: 2px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.turnstile-wrapper .cf-turnstile,
+.turnstile-wrapper iframe {
+    width: 100% !important;
+    min-width: 100% !important;
+}
+
+/* Tombol */
+.btn-auth {
+    width: 100%;
+    height: 38px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-auth:hover {
+    background: var(--accent-hover);
+}
+
+.btn-google {
+    width: 100%;
+    height: 38px;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.btn-google:hover {
+    background: var(--bg-hover);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    margin: 8px 0;
+}
+
+.divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.divider::before { margin-right: 14px; }
+.divider::after { margin-left: 14px; }
+
+.auth-footer {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+}
+
+.auth-footer a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.back-home {
+    display: block;
+    text-align: center;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-decoration: none;
+}
+
+.back-home:hover {
+    color: var(--text-primary);
+}
+
+/* Error Message */
+.form-error {
+    font-size: 11.5px;
+    color: var(--danger);
+    margin-top: 2px;
+}
+
+/* ===== RESPONSIVE (MOBILE) ===== */
+@media (max-width: 900px) {
+    .auth-container {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+    .auth-visual {
+        display: none;
+    }
+    .auth-form-wrapper {
+        height: auto;
+        min-height: 100vh;
+        padding: 36px 20px;
+        overflow: visible;
+    }
+    .auth-theme-btn {
+        top: 16px;
+        right: 16px;
+    }
+}
+@media (prefers-color-scheme: light) {
+    .auth-visual {
+        background: linear-gradient(135deg, rgba(250, 251, 252, 0.9), rgba(241, 243, 245, 0.8)), 
+                    url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop') center/cover;
+        color: var(--text-primary);
+    }
+    .auth-visual-content p { color: var(--text-secondary); }
+}
+
 
 
 

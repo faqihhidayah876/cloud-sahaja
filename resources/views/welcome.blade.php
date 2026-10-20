@@ -1055,9 +1055,9 @@
             <div class="story-text">
                 <span class="step-num">01 &mdash; Kecepatan Upload</span>
                 <h2>Upload File Besar<br>Tanpa Hambatan.</h2>
-                <p>Teknologi <strong>Chunked Upload</strong> memotong file besar menjadi potongan kecil, lalu menyusunnya kembali di server. Upload file berukuran Gigabyte tanpa khawatir koneksi terputus.</p>
+                <p>Teknologi <strong>Chunked Upload</strong> memotong file besar menjadi potongan kecil, lalu menyusunnya kembali di server.</p>
                 <ul class="story-feature-list">
-                    <li><i class="fas fa-check"></i> Bypass batas upload Cloudflare 100MB</li>
+                    <li><i class="fas fa-check"></i> Upload File besar hingga 2GB</li>
                     <li><i class="fas fa-check"></i> Progress bar real-time per chunk</li>
                 </ul>
             </div>
@@ -1070,7 +1070,7 @@
                         </div>
                     </div>
                     <div class="story-deco story-deco-1">
-                        <span class="deco-icon"><i class="fas fa-tachometer-alt"></i> 300 MBps</span>
+                        <span class="deco-icon"><i class="fas fa-tachometer-alt"></i> Speed Tinggi</span>
                     </div>
                     <div class="story-deco story-deco-2">
                         <span class="deco-icon"><i class="fas fa-check" style="color:#34D399"></i> Upload Selesai</span>
@@ -1084,9 +1084,9 @@
             <div class="story-text">
                 <span class="step-num">02 &mdash; Keamanan Berlapis</span>
                 <h2>Proteksi Kelas<br>Enterprise.</h2>
-                <p>Data Anda dilindungi oleh tiga lapis keamanan sekaligus: OAuth Google, Cloudflare Turnstile CAPTCHA, dan sistem deteksi serangan otomatis dari CrowdSec.</p>
+                <p>Data Anda dilindungi oleh keamanan berlapir sekaligus: Cloudflare Turnstile CAPTCHA dan sistem deteksi serangan otomatis dari RICO BOT Server kami.</p>
                 <ul class="story-feature-list">
-                    <li><i class="fas fa-check"></i> Login via Google OAuth &mdash; tanpa password lemah</li>
+                    <li><i class="fas fa-check"></i> Login via Google OAuth</li>
                     <li><i class="fas fa-check"></i> CAPTCHA bot prevention (Cloudflare Turnstile)</li>
                     <li><i class="fas fa-check"></i> RICO BOT Satpam Server Blokir IP Bot Otomatis</li>
                 </ul>
@@ -1094,7 +1094,7 @@
             <div class="story-visual">
                 <div class="floating-wrapper levitate-reverse">
                     <div class="floating-card">
-                        <img src="https://i.ibb.co.com/F4d8110n/benchmark1.jpg" alt="Keamanan">
+                        <img src="https://i.ibb.co.com/7dpjzTnw/benchmark.jpg" alt="Keamanan">
                         <div class="floating-card-overlay">
                             <span class="floating-card-badge"><i class="fas fa-shield-alt" style="color:#34D399"></i> 3 Layer Security</span>
                         </div>
@@ -1113,10 +1113,10 @@
         <div class="story-row gsap-reveal">
             <div class="story-text">
                 <span class="step-num">03 &mdash; Kolaborasi & Berbagi</span>
-                <h2>Bagikan File dengan<br>Kendali Penuh.</h2>
-                <p>Buat tautan berbagi publik dengan masa aktif yang bisa diatur. Preview PDF, video, dan gambar langsung di browser &mdash; tanpa download dulu.</p>
+                <h2>Bagikan File dengan<br>Mudah.</h2>
+                <p>Buat tautan berbagi publik dengan masa aktif pilihan. Preview PDF, video, dan gambar langsung di browser &mdash; tanpa download dulu.</p>
                 <ul class="story-feature-list">
-                    <li><i class="fas fa-check"></i> Share link dengan expiry date</li>
+                    <li><i class="fas fa-check"></i> Share link dengan expiry time pilihan</li>
                     <li><i class="fas fa-check"></i> Preview PDF, video, gambar inline</li>
                 </ul>
             </div>
@@ -1154,7 +1154,7 @@
                         <div style="flex:1; min-width:200px;">
                             <div class="bento-icon-wrap purple"><i class="fas fa-cloud-upload-alt"></i></div>
                             <h3>Upload Tanpa Batas Ukuran</h3>
-                            <p>Simpan file hingga Gigabyte dengan sistem chunked upload yang anti-gagal.</p>
+                            <p>Simpan file hingga Gigabyte dengan sistem chunked upload.</p>
                             <div class="bento-progress">
                                 <div class="bento-progress-label"><span>Video 4K.mp4</span><span>78%</span></div>
                                 <div class="bento-progress-bar"><div class="bento-progress-fill" style="width:78%"></div></div>
@@ -1167,12 +1167,11 @@
                 <div class="bento-card bento-col-4 gsap-reveal-scale">
                     <div class="bento-icon-wrap cyan"><i class="fas fa-shield-alt"></i></div>
                     <h3>Keamanan Berlapis</h3>
-                    <p>OAuth Google, Turnstile CAPTCHA, dan proteksi DDoS aktif 24/7.</p>
+                    <p>Turnstile CAPTCHA dan proteksi server aktif 24/7.</p>
                     <div class="bento-shield"><i class="fas fa-shield-alt"></i></div>
                     <div class="tag-row">
-                        <span class="tag">OAuth</span>
                         <span class="tag">Turnstile</span>
-                        <span class="tag">CrowdSec</span>
+                        <span class="tag">RICO BOT</span>
                     </div>
                 </div>
                 <!-- Smart Trash -->
@@ -1185,7 +1184,7 @@
                 <div class="bento-card bento-col-4 gsap-reveal-scale">
                     <div class="bento-icon-wrap green"><i class="fas fa-folder-tree"></i></div>
                     <h3>Nested Folder</h3>
-                    <p>Kelola ribuan file dengan struktur folder bertingkat dan pencarian instan.</p>
+                    <p>Kelola ratusan file dengan struktur folder bertingkat dan pencarian instan.</p>
                 </div>
                 <!-- Share card -->
                 <div class="bento-card bento-col-4 gsap-reveal-scale">
@@ -1198,7 +1197,7 @@
                     <div style="flex:1; min-width:200px;">
                         <div class="bento-icon-wrap purple" style="display:inline-flex; margin-bottom:16px;"><i class="fas fa-database"></i></div>
                         <h3>2GB Gratis Selamanya</h3>
-                        <p>Mulai tanpa biaya apapun. Kuota bisa ditingkatkan oleh admin.</p>
+                        <p>Mulai tanpa biaya apapun.</p>
                     </div>
                     <div style="flex:2; min-width:240px;">
                         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-muted); margin-bottom:10px;"><span>Penggunaan Storage</span><span>0 / 2GB</span></div>
@@ -1234,8 +1233,8 @@
             </div>
             <div class="trust-card gsap-reveal">
                 <div class="trust-icon cyan"><i class="fas fa-bolt"></i></div>
-                <h4>Dioptimalkan untuk Server Kecil</h4>
-                <p>Berjalan efisien bahkan di server i386 dengan resource terbatas. Tetap cepat dan responsif.</p>
+                <h4>Dioptimalkan untuk Anda</h4>
+                <p>Berjalan dengan efisien, Tetap cepat dan responsif.</p>
             </div>
             <div class="trust-card gsap-reveal">
                 <div class="trust-icon green"><i class="fas fa-globe"></i></div>
@@ -1298,7 +1297,7 @@
                         <li><a href="{{ route('register') }}"></i> Buat Akun Baru</a></li>
                         <li><a href="https://sahaja-ai.my.id" target="_blank" rel="noopener noreferrer"></i> Portal SAHAJA AI</a></li>
                         <li><a href="https://github.com/faqihhidayah876/cloud-sahaja.git" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Repository GitHub</a></li>
-                        <li><span><i class="fas fa-code"></i> Dibuat oleh Faqih Hidayah</span></li>
+                        {{-- <li><span><i class="fas fa-code"></i> Dibuat oleh Faqih Hidayah</span></li> --}}
                     </ul>
                 </div>
             </div>

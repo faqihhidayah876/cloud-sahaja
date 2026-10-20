@@ -2,11 +2,14 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $file->original_name }} — Cloud Sahaja</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    @if($file->preview_type === 'pdf')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    @endif
     
     <script>
         (function() {
@@ -198,6 +201,52 @@
             background: #000;
         }
 
+        /* PDF.js Viewer Styles */
+        .pdf-scroll-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 8px;
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pdf-page-wrapper {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            border-radius: 4px;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .pdf-canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .pdf-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            padding: 40px;
+        }
+
+        .pdf-loading i {
+            font-size: 28px;
+            color: var(--accent);
+        }
+
         /* Tampilan Jika File Tidak Bisa Di-preview */
         .share-fallback {
             display: flex;
@@ -262,7 +311,12 @@
             <video src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay muted></video>
             
         @elseif($previewType === 'pdf')
-            <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=0&navpanes=0"></iframe>
+            <div id="pdfContainer" class="pdf-scroll-container">
+                <div id="pdfLoading" class="pdf-loading">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    <span>Memuat pratinjau dokumen...</span>
+                </div>
+            </div>
             
         @elseif($previewType === 'audio')
             <div class="share-fallback">
@@ -297,6 +351,74 @@
                 dropdown.classList.remove('show');
             }
         });
+
+        @if($previewType === 'pdf')
+        (function() {
+            if (typeof pdfjsLib === 'undefined') return;
+
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            const pdfUrl = "{{ route('files.sharedPreview', $file->share_token) }}";
+            const container = document.getElementById('pdfContainer');
+            const loadingEl = document.getElementById('pdfLoading');
+
+            pdfjsLib.getDocument({
+                url: pdfUrl,
+                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+                cMapPacked: true,
+            }).promise.then(async function(pdf) {
+                if (loadingEl) loadingEl.remove();
+
+                const containerWidth = container.clientWidth || window.innerWidth;
+                const isMobile = window.innerWidth <= 600;
+                const padding = isMobile ? 16 : 48;
+                const targetWidth = Math.min(containerWidth - padding, 880);
+                const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
+                    const unscaledViewport = page.getViewport({ scale: 1 });
+                    const scale = targetWidth / unscaledViewport.width;
+                    const viewport = page.getViewport({ scale: scale });
+
+                    const pageWrapper = document.createElement('div');
+                    pageWrapper.className = 'pdf-page-wrapper';
+
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pdf-canvas';
+                    const ctx = canvas.getContext('2d');
+
+                    canvas.width = Math.floor(viewport.width * dpr);
+                    canvas.height = Math.floor(viewport.height * dpr);
+                    canvas.style.width = Math.floor(viewport.width) + 'px';
+                    canvas.style.height = Math.floor(viewport.height) + 'px';
+
+                    pageWrapper.appendChild(canvas);
+                    container.appendChild(pageWrapper);
+
+                    const renderContext = {
+                        canvasContext: ctx,
+                        transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null,
+                        viewport: viewport,
+                    };
+                    await page.render(renderContext).promise;
+                }
+            }).catch(function(err) {
+                console.error('PDF.js render error:', err);
+                if (loadingEl) {
+                    loadingEl.innerHTML = `
+                        <div style="text-align: center; color: var(--text-secondary); max-width: 320px;">
+                            <i class="fas fa-file-pdf" style="font-size: 40px; color: var(--accent); margin-bottom: 12px; display: block;"></i>
+                            <p style="font-size: 14px; margin-bottom: 16px;">Tidak dapat merender pratinjau PDF di browser ini.</p>
+                            <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-download"></i> Download File
+                            </a>
+                        </div>
+                    `;
+                }
+            });
+        })();
+        @endif
     </script>
 </body>
 </html>

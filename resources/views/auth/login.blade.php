@@ -68,7 +68,7 @@
                 @error('password') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px; overflow: hidden;">
+            <div class="turnstile-wrapper" style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px;">
                 <div class="cf-turnstile" id="cfTurnstile"
                      data-sitekey="{{ config('services.turnstile.site_key') }}"
                      data-size="flexible"></div>

@@ -87,7 +87,7 @@ class FileController extends Controller
     {
         try {
             $request->validate([
-                'file' => 'required|file|max:102400', // 100MB max
+                'file' => 'required|file|max:2048000', // 100MB max
                 'parent_id' => 'nullable|exists:files,id',
             ]);
             

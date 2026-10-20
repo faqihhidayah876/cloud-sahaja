@@ -2125,4 +2125,26 @@ body.light-mode .header-icon-btn-primary:hover {
     max-width: 100%;
 }
 
+/* Fix Cloudflare Turnstile agar tidak terpotong di HP */
+.turnstile-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.turnstile-wrapper .cf-turnstile {
+    max-width: 100%;
+    /* Transformasi skala kecil untuk layar di bawah 360px agar pas */
+    transform-origin: center;
+}
+
+@media (max-width: 360px) {
+    .turnstile-wrapper {
+        transform: scale(0.9);
+        margin-top: -5px;
+        margin-bottom: 10px;
+    }
+}
+
+
 

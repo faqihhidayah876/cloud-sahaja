@@ -90,27 +90,77 @@
             text-overflow: ellipsis;
         }
 
-        /* Tombol Download Ikon Saja */
-        .share-download-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Kebab Menu & Dropdown */
+        .share-actions {
+            position: relative;
+            margin-left: 12px;
+            flex-shrink: 0;
+        }
+
+        .share-action-btn {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
+            background: transparent;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: background 150ms, color 150ms;
+        }
+
+        .share-action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .share-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            min-width: 160px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            z-index: 50;
+        }
+
+        .share-dropdown.show {
+            display: block;
+            animation: fadeIn 150ms ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .share-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--text-primary);
             text-decoration: none;
-            flex-shrink: 0;
-            transition: background 150ms, transform 150ms;
-            margin-left: 12px;
+            border-radius: var(--radius-sm);
+            transition: background 150ms;
         }
-        .share-download-btn:hover {
-            background: var(--accent-hover);
-            transform: scale(1.05);
+
+        .share-dropdown-item:hover {
+            background: var(--bg-hover);
         }
-        .share-download-btn i {
-            font-size: 16px;
+
+        .share-dropdown-item i {
+            color: var(--text-secondary);
+            width: 16px;
+            text-align: center;
         }
 
         /* Area Preview Full Screen */
@@ -189,9 +239,16 @@
                 <div class="share-file-brand">Dibagikan via Cloud Sahaja</div>
             </div>
         </div>
-        <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="share-download-btn" title="Download File">
-            <i class="fas fa-download"></i>
-        </a>
+        <div class="share-actions">
+            <button type="button" class="share-action-btn" onclick="toggleShareMenu(event)" title="Menu">
+                <i class="fas fa-ellipsis-vertical"></i>
+            </button>
+            <div class="share-dropdown" id="shareDropdown">
+                <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="share-dropdown-item">
+                    <i class="fas fa-download"></i> Download File
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Preview Area -->
@@ -205,7 +262,7 @@
             <video src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay muted></video>
             
         @elseif($previewType === 'pdf')
-            <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0"></iframe>
+            <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=0&navpanes=0"></iframe>
             
         @elseif($previewType === 'audio')
             <div class="share-fallback">
@@ -225,5 +282,21 @@
             </div>
         @endif
     </div>
+
+    <script>
+        function toggleShareMenu(e) {
+            if (e) e.stopPropagation();
+            const dropdown = document.getElementById('shareDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Tutup dropdown jika klik di luar area menu
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('shareDropdown');
+            if (dropdown && dropdown.classList.contains('show') && !e.target.closest('.share-actions')) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

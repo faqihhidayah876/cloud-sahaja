@@ -2125,24 +2125,56 @@ body.light-mode .header-icon-btn-primary:hover {
     max-width: 100%;
 }
 
-/* Fix Cloudflare Turnstile agar tidak terpotong di HP */
-.turnstile-wrapper {
-    display: flex;
-    justify-content: center;
+/* Auth Pages Mobile Responsive (menghindari overflow / widget sempit di HP) */
+@media (max-width: 480px) {
+    body.auth-body,
+    body:has(.auth-card) {
+        padding: 16px 12px !important;
+    }
+
+    .auth-card {
+        padding: 28px 16px !important;
+        border-radius: var(--radius-lg);
+    }
+}
+
+/* --- FIX CLOUDFLARE TURNSTILE (LAPTOP FULL-WIDTH & RESPONSIVE MOBILE) --- */
+.turnstile-container {
     width: 100%;
+    margin-bottom: 16px;
 }
 
-.turnstile-wrapper .cf-turnstile {
-    max-width: 100%;
-    /* Transformasi skala kecil untuk layar di bawah 360px agar pas */
-    transform-origin: center;
+.turnstile-container .cf-turnstile {
+    width: 100% !important;
 }
 
-@media (max-width: 360px) {
-    .turnstile-wrapper {
-        transform: scale(0.9);
-        margin-top: -5px;
-        margin-bottom: 10px;
+.turnstile-container .cf-turnstile > div,
+.turnstile-container .cf-turnstile iframe,
+.turnstile-container iframe {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Untuk layar ekstra kecil (< 350px), sesuaikan skala agar pas di dalam card */
+@media (max-width: 350px) {
+    .turnstile-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .turnstile-container .cf-turnstile {
+        width: 300px !important;
+        min-width: 300px !important;
+        transform: scale(0.86);
+        transform-origin: center center;
+    }
+}
+
+@media (max-width: 320px) {
+    .turnstile-container .cf-turnstile {
+        transform: scale(0.78);
+        transform-origin: center center;
     }
 }
 

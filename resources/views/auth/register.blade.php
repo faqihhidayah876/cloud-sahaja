@@ -21,7 +21,7 @@
     @vite(['resources/css/app.css'])
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-<body style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;">
+<body class="auth-body" style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;">
     <div class="auth-card" style="position: relative;">
         <button type="button" class="header-icon-btn" onclick="toggleAuthTheme()" title="Ubah Tema"
                 style="position: absolute; top: 16px; right: 16px; width: 34px; height: 34px;">
@@ -85,7 +85,7 @@
                 @error('password_confirmation') <div class="form-error">{{ $message }}</div> @enderror
             </div>
 
-            <div class="turnstile-wrapper" style="display: flex; justify-content: center; width: 100%; margin-bottom: 16px;">
+            <div class="turnstile-container">
                 <div class="cf-turnstile" id="cfTurnstile"
                      data-sitekey="{{ config('services.turnstile.site_key') }}"
                      data-size="flexible"></div>

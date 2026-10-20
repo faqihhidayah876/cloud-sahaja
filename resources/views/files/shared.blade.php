@@ -2,14 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ $file->original_name }} — Cloud Sahaja</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png">
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,500" rel="stylesheet">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    {{-- Theme init anti-FOUC --}}
     <script>
         (function() {
             if (localStorage.getItem('cloud-sahaja-theme') === 'light') {
@@ -17,207 +15,215 @@
             }
         })();
     </script>
-
     @vite(['resources/css/app.css'])
-
+    
     <style>
-        .shared-page {
-            min-height: 100vh;
+        /* Reset & Full Screen Layout */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background-color: var(--bg-base);
+            font-family: 'Inter', sans-serif;
             display: flex;
             flex-direction: column;
-            background: var(--bg-base);
-            color: var(--text-primary);
         }
 
-        .shared-topbar {
-            position: sticky;
-            top: 0;
-            padding: 12px 24px;
-            background: var(--bg-base);
-            border-bottom: 1px solid var(--border-subtle);
+        /* Top Bar Compact */
+        .share-topbar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            height: 56px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
             z-index: 10;
         }
 
-        .shared-topbar-left {
+        .share-file-info {
             display: flex;
             align-items: center;
             gap: 12px;
+            min-width: 0; /* Penting untuk ellipsis */
+            flex: 1;
+        }
+
+        .share-file-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            background: var(--accent-subtle);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .share-file-text {
+            display: flex;
+            flex-direction: column;
             min-width: 0;
         }
 
-        .shared-topbar-title {
+        .share-file-name {
             font-size: 14px;
             font-weight: 600;
+            color: var(--text-primary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 480px;
+            line-height: 1.2;
         }
 
-        .shared-body {
+        .share-file-brand {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tombol Download Ikon Saja */
+        .share-download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            flex-shrink: 0;
+            transition: background 150ms, transform 150ms;
+            margin-left: 12px;
+        }
+        .share-download-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+        .share-download-btn i {
+            font-size: 16px;
+        }
+
+        /* Area Preview Full Screen */
+        .share-preview-area {
             flex: 1;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #1e1e1e; /* Background gelap untuk viewer */
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 32px 24px;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
+            overflow: hidden;
         }
 
-        .shared-card {
-            background: var(--bg-elevated);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-xl);
-            padding: 36px 32px;
-            max-width: 440px;
+        /* Styling Spesifik Preview */
+        .share-preview-area iframe {
             width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+        }
+
+        .share-preview-area img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .share-preview-area video {
+            max-width: 100%;
+            max-height: 100%;
+            outline: none;
+            background: #000;
+        }
+
+        /* Tampilan Jika File Tidak Bisa Di-preview */
+        .share-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
             text-align: center;
-            box-shadow: var(--shadow-md);
+            color: var(--text-secondary);
         }
-
-        .shared-icon {
-            width: 72px;
-            height: 72px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            margin: 0 auto 20px;
+        .share-fallback i {
+            font-size: 64px;
+            color: var(--text-tertiary);
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
-
-        .shared-title {
+        .share-fallback h2 {
             font-size: 18px;
-            font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             word-break: break-word;
         }
 
-        .shared-meta {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 28px;
+        /* Light Mode Override untuk Background Viewer */
+        html.light-mode .share-preview-area {
+            background: #f5f5f5;
         }
     </style>
 </head>
-<body class="shared-page">
-    @if($file->isShareExpired())
-        {{-- Top Bar saat Link Expired --}}
-        <div class="shared-topbar">
-            <div class="shared-topbar-left">
-                <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" 
-                     alt="Cloud Sahaja" style="width: 32px; height: 32px; border-radius: 6px;">
-                <div>
-                    <div class="shared-topbar-title">{{ $file->original_name }}</div>
-                    <div style="font-size: 12px; color: var(--text-tertiary);">
-                        Dibagikan via Cloud Sahaja
-                    </div>
-                </div>
+<body>
+    <!-- Top Bar -->
+    <div class="share-topbar">
+        <div class="share-file-info">
+            <div class="share-file-icon" style="background: {{ $file->icon_color }}20; color: {{ $file->icon_color }};">
+                <i class="fas {{ $file->icon }}"></i>
             </div>
-            <a href="https://sahaja-ai.my.id" class="btn btn-secondary" style="font-size: 13px;">
-                <i class="fas fa-arrow-left"></i> SAHAJA AI
-            </a>
-        </div>
-
-        {{-- Expired Message --}}
-        <div class="shared-body">
-            <div style="text-align: center; padding: 60px 24px; max-width: 480px;">
-                <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--bg-subtle); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
-                    <i class="fas fa-clock" style="font-size: 40px; color: var(--warning);"></i>
-                </div>
-                <h2 style="font-size: 22px; font-weight: 600; margin-bottom: 8px;">Link Sudah Kadaluarsa</h2>
-                <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
-                    Masa berlaku link berbagi untuk file ini telah berakhir atau akses telah dicabut oleh pemilik file.
-                </p>
-                <div style="margin-top: 28px;">
-                    <a href="{{ route('welcome') }}" class="btn btn-secondary">
-                        <i class="fas fa-house"></i> Halaman Utama
-                    </a>
-                </div>
+            <div class="share-file-text">
+                <div class="share-file-name" title="{{ $file->original_name }}">{{ $file->original_name }}</div>
+                <div class="share-file-brand">Dibagikan via Cloud Sahaja</div>
             </div>
         </div>
-    @else
-        {{-- Top Bar Active --}}
-        <div class="shared-topbar">
-            <div class="shared-topbar-left">
-                <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" 
-                     alt="Cloud Sahaja" style="width: 32px; height: 32px; border-radius: 6px;">
-                <div>
-                    <div class="shared-topbar-title">{{ $file->original_name }}</div>
-                    <div style="font-size: 12px; color: var(--text-tertiary);">
-                        Dibagikan via Cloud Sahaja
-                    </div>
-                </div>
+        <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="share-download-btn" title="Download File">
+            <i class="fas fa-download"></i>
+        </a>
+    </div>
+
+    <!-- Preview Area -->
+    <div class="share-preview-area">
+        @php $previewType = $file->preview_type; @endphp
+
+        @if($previewType === 'image')
+            <img src="{{ route('files.sharedPreview', $file->share_token) }}" alt="{{ $file->original_name }}">
+            
+        @elseif($previewType === 'video')
+            <video src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay muted></video>
+            
+        @elseif($previewType === 'pdf')
+            <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0"></iframe>
+            
+        @elseif($previewType === 'audio')
+            <div class="share-fallback">
+                <i class="fas fa-music"></i>
+                <h2>{{ $file->original_name }}</h2>
+                <audio src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay style="width: 100%; max-width: 400px; margin-top: 20px;"></audio>
             </div>
-            <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="btn btn-primary">
-                <i class="fas fa-download"></i> Download
-            </a>
-        </div>
-
-        {{-- Body Preview / Card --}}
-        <div class="shared-body">
-            @php $previewType = $file->preview_type; @endphp
-
-            @if($previewType === 'image')
-                <div style="display: flex; justify-content: center; align-items: center; max-width: 100%;">
-                    <img src="{{ route('files.sharedPreview', $file->share_token) }}"
-                         alt="{{ $file->original_name }}"
-                         style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 12px; box-shadow: var(--shadow-lg);">
-                </div>
-            @elseif($previewType === 'video')
-                <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
-                    <video src="{{ route('files.sharedPreview', $file->share_token) }}"
-                           controls 
-                           style="max-width: 100%; max-height: 80vh; border-radius: 12px; background: #000; box-shadow: var(--shadow-lg);"></video>
-                </div>
-            @elseif($previewType === 'pdf')
-                <div style="width: 100%; height: 82vh;">
-                    <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0"
-                            style="width: 100%; height: 100%; border: none; border-radius: 12px; background: #fff; box-shadow: var(--shadow-lg);"></iframe>
-                </div>
-            @elseif($previewType === 'audio')
-                <div class="shared-card">
-                    <div class="shared-icon" style="background: var(--accent-subtle); color: var(--accent);">
-                        <i class="fas fa-music"></i>
-                    </div>
-                    <h1 class="shared-title">{{ $file->original_name }}</h1>
-                    <div class="shared-meta">
-                        <span><i class="fas fa-hdd"></i> {{ $file->human_size }}</span>
-                        <span><i class="fas fa-clock"></i> {{ $file->created_at->format('d M Y') }}</span>
-                    </div>
-                    <audio src="{{ route('files.sharedPreview', $file->share_token) }}"
-                           controls style="width: 100%; margin-bottom: 24px;"></audio>
-                    <a href="{{ route('files.sharedDownload', $file->share_token) }}"
-                       class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-download"></i> Download File
-                    </a>
-                </div>
-            @else
-                <div class="shared-card">
-                    <div class="shared-icon" style="background: {{ $file->icon_color }}20; color: {{ $file->icon_color }};">
-                        <i class="fas {{ $file->icon }}"></i>
-                    </div>
-                    <h1 class="shared-title">{{ $file->original_name }}</h1>
-                    <div class="shared-meta">
-                        <span><i class="fas fa-hdd"></i> {{ $file->human_size }}</span>
-                        <span><i class="fas fa-clock"></i> {{ $file->created_at->format('d M Y') }}</span>
-                    </div>
-                    <a href="{{ route('files.sharedDownload', $file->share_token) }}"
-                       class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-download"></i> Download File
-                    </a>
-                </div>
-            @endif
-        </div>
-    @endif
+            
+        @else
+            <div class="share-fallback">
+                <i class="fas {{ $file->icon }}"></i>
+                <h2>{{ $file->original_name }}</h2>
+                <p style="margin-top: 8px; font-size: 14px;">File ini tidak mendukung pratinjau langsung.</p>
+                <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="btn btn-primary" style="margin-top: 24px;">
+                    <i class="fas fa-download"></i> Download File
+                </a>
+            </div>
+        @endif
+    </div>
 </body>
 </html>

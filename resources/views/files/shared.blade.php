@@ -172,33 +172,15 @@
             width: 100%;
             height: 100%;
             position: relative;
-            background: #1e1e1e; /* Background gelap untuk viewer */
+            background: #1e1e1e;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
         }
 
-        /* Styling Spesifik Preview */
-        .share-preview-area iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #fff;
-        }
-
-        .share-preview-area img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
+        .share-preview-area.has-scrollable {
             display: block;
-        }
-
-        .share-preview-area video {
-            max-width: 100%;
-            max-height: 100%;
-            outline: none;
-            background: #000;
         }
 
         /* PDF.js Viewer Styles */
@@ -207,28 +189,34 @@
             height: 100%;
             overflow-y: auto;
             overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 8px;
-            gap: 16px;
+            display: block;
+            padding: 20px 12px 40px;
+            box-sizing: border-box;
+            text-align: center;
             -webkit-overflow-scrolling: touch;
+            background: #18191c;
+        }
+
+        html.light-mode .pdf-scroll-container {
+            background: #e2e8f0;
         }
 
         .pdf-page-wrapper {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            display: inline-block;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
             border-radius: 4px;
             background: #ffffff;
-            display: flex;
-            justify-content: center;
             max-width: 100%;
-            overflow: hidden;
+            box-sizing: border-box;
+            vertical-align: top;
         }
 
         .pdf-canvas {
             display: block;
-            max-width: 100%;
-            height: auto;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
         }
 
         .pdf-loading {
@@ -239,12 +227,41 @@
             gap: 12px;
             color: var(--text-secondary);
             font-size: 14px;
-            padding: 40px;
+            padding: 60px 20px;
         }
 
         .pdf-loading i {
-            font-size: 28px;
+            font-size: 32px;
             color: var(--accent);
+        }
+
+        /* Text Viewer Styles */
+        .share-text-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 24px 16px;
+            background: #ffffff;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        html:not(.light-mode) .share-text-container {
+            background: #141721;
+        }
+
+        .share-text-content {
+            width: 100%;
+            max-width: 900px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+            font-size: 13.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--text-primary);
+            margin: 0;
         }
 
         /* Tampilan Jika File Tidak Bisa Di-preview */
@@ -253,20 +270,25 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: 32px 20px;
             text-align: center;
             color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto;
         }
-        .share-fallback i {
-            font-size: 64px;
-            color: var(--text-tertiary);
-            margin-bottom: 16px;
-            opacity: 0.5;
+        .share-fallback-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
         }
         .share-fallback h2 {
             font-size: 18px;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             word-break: break-word;
         }
 
@@ -300,10 +322,10 @@
         </div>
     </div>
 
-    <!-- Preview Area -->
-    <div class="share-preview-area">
-        @php $previewType = $file->preview_type; @endphp
+    @php $previewType = $file->preview_type; @endphp
 
+    <!-- Preview Area -->
+    <div class="share-preview-area {{ in_array($previewType, ['pdf', 'text']) ? 'has-scrollable' : '' }}">
         @if($previewType === 'image')
             <img src="{{ route('files.sharedPreview', $file->share_token) }}" alt="{{ $file->original_name }}">
             
@@ -318,20 +340,27 @@
                 </div>
             </div>
             
+        @elseif($previewType === 'text')
+            <div class="share-text-container">
+                <pre class="share-text-content" id="shareTextContent">Memuat dokumen teks...</pre>
+            </div>
+            
         @elseif($previewType === 'audio')
             <div class="share-fallback">
-                <i class="fas fa-music"></i>
+                <i class="fas fa-music" style="font-size: 56px; color: var(--accent); margin-bottom: 16px;"></i>
                 <h2>{{ $file->original_name }}</h2>
                 <audio src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay style="width: 100%; max-width: 400px; margin-top: 20px;"></audio>
             </div>
             
         @else
             <div class="share-fallback">
-                <i class="fas {{ $file->icon }}"></i>
+                <div class="share-fallback-icon" style="background: {{ $file->icon_color }}15;">
+                    <i class="fas {{ $file->icon }}" style="font-size: 38px; color: {{ $file->icon_color }};"></i>
+                </div>
                 <h2>{{ $file->original_name }}</h2>
-                <p style="margin-top: 8px; font-size: 14px;">File ini tidak mendukung pratinjau langsung.</p>
-                <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="btn btn-primary" style="margin-top: 24px;">
-                    <i class="fas fa-download"></i> Download File
+                <p style="margin-top: 6px; font-size: 13.5px; color: var(--text-secondary);">{{ $file->human_size }} &bull; Pratinjau langsung tidak tersedia untuk format ini</p>
+                <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="btn btn-primary" style="margin-top: 24px; display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-weight: 600;">
+                    <i class="fas fa-download"></i> Download File ({{ $file->human_size }})
                 </a>
             </div>
         @endif
@@ -352,6 +381,21 @@
             }
         });
 
+        @if($previewType === 'text')
+        (function() {
+            fetch("{{ route('files.sharedPreview', $file->share_token) }}")
+                .then(r => r.text())
+                .then(text => {
+                    const el = document.getElementById('shareTextContent');
+                    if (el) el.textContent = text;
+                })
+                .catch(() => {
+                    const el = document.getElementById('shareTextContent');
+                    if (el) el.textContent = 'Gagal memuat isi dokumen teks.';
+                });
+        })();
+        @endif
+
         @if($previewType === 'pdf')
         (function() {
             if (typeof pdfjsLib === 'undefined') return;
@@ -369,11 +413,11 @@
             }).promise.then(async function(pdf) {
                 if (loadingEl) loadingEl.remove();
 
-                const containerWidth = container.clientWidth || window.innerWidth;
+                const containerWidth = (container.clientWidth && container.clientWidth > 50) ? container.clientWidth : window.innerWidth;
                 const isMobile = window.innerWidth <= 600;
-                const padding = isMobile ? 16 : 48;
-                const targetWidth = Math.min(containerWidth - padding, 880);
-                const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+                const padding = isMobile ? 24 : 56;
+                const targetWidth = Math.max(Math.min(containerWidth - padding, 860), 280);
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                     const page = await pdf.getPage(pageNum);
@@ -381,17 +425,25 @@
                     const scale = targetWidth / unscaledViewport.width;
                     const viewport = page.getViewport({ scale: scale });
 
+                    const pageWidth = Math.floor(viewport.width);
+                    const pageHeight = Math.floor(viewport.height);
+
                     const pageWrapper = document.createElement('div');
                     pageWrapper.className = 'pdf-page-wrapper';
+                    pageWrapper.style.width = pageWidth + 'px';
+                    pageWrapper.style.height = pageHeight + 'px';
 
                     const canvas = document.createElement('canvas');
                     canvas.className = 'pdf-canvas';
                     const ctx = canvas.getContext('2d');
 
-                    canvas.width = Math.floor(viewport.width * dpr);
-                    canvas.height = Math.floor(viewport.height * dpr);
-                    canvas.style.width = Math.floor(viewport.width) + 'px';
-                    canvas.style.height = Math.floor(viewport.height) + 'px';
+                    // Set real resolution based on dpr
+                    canvas.width = Math.floor(pageWidth * dpr);
+                    canvas.height = Math.floor(pageHeight * dpr);
+
+                    // Set display CSS size
+                    canvas.style.width = pageWidth + 'px';
+                    canvas.style.height = pageHeight + 'px';
 
                     pageWrapper.appendChild(canvas);
                     container.appendChild(pageWrapper);

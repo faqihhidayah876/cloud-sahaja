@@ -7,9 +7,6 @@
     <link rel="icon" type="image/png" href="https://cdn.dbimg.app/TVHxIiqe.png">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @if($file->preview_type === 'pdf')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    @endif
     
     <script>
         (function() {
@@ -177,9 +174,19 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            z-index: 1;
         }
 
         .share-preview-area.has-scrollable {
+            display: block;
+        }
+
+        .share-preview-area iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #fff;
+            pointer-events: auto !important;
             display: block;
         }
 
@@ -333,12 +340,9 @@
             <video src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay muted></video>
             
         @elseif($previewType === 'pdf')
-            <div id="pdfContainer" class="pdf-scroll-container">
-                <div id="pdfLoading" class="pdf-loading">
-                    <i class="fas fa-circle-notch fa-spin"></i>
-                    <span>Memuat pratinjau dokumen...</span>
-                </div>
-            </div>
+            <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0&view=FitH" 
+                    style="width: 100%; height: 100%; border: none; background: #fff; pointer-events: auto;">
+            </iframe>
             
         @elseif($previewType === 'text')
             <div class="share-text-container">
@@ -396,81 +400,7 @@
         })();
         @endif
 
-        @if($previewType === 'pdf')
-        (function() {
-            if (typeof pdfjsLib === 'undefined') return;
 
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-            const pdfUrl = "{{ route('files.sharedPreview', $file->share_token) }}";
-            const container = document.getElementById('pdfContainer');
-            const loadingEl = document.getElementById('pdfLoading');
-
-            pdfjsLib.getDocument({
-                url: pdfUrl,
-                cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
-                cMapPacked: true,
-            }).promise.then(async function(pdf) {
-                if (loadingEl) loadingEl.remove();
-
-                const containerWidth = (container.clientWidth && container.clientWidth > 50) ? container.clientWidth : window.innerWidth;
-                const isMobile = window.innerWidth <= 600;
-                const padding = isMobile ? 24 : 56;
-                const targetWidth = Math.max(Math.min(containerWidth - padding, 860), 280);
-                const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                    const page = await pdf.getPage(pageNum);
-                    const unscaledViewport = page.getViewport({ scale: 1 });
-                    const scale = targetWidth / unscaledViewport.width;
-                    const viewport = page.getViewport({ scale: scale });
-
-                    const pageWidth = Math.floor(viewport.width);
-                    const pageHeight = Math.floor(viewport.height);
-
-                    const pageWrapper = document.createElement('div');
-                    pageWrapper.className = 'pdf-page-wrapper';
-                    pageWrapper.style.width = pageWidth + 'px';
-                    pageWrapper.style.height = pageHeight + 'px';
-
-                    const canvas = document.createElement('canvas');
-                    canvas.className = 'pdf-canvas';
-                    const ctx = canvas.getContext('2d');
-
-                    // Set real resolution based on dpr
-                    canvas.width = Math.floor(pageWidth * dpr);
-                    canvas.height = Math.floor(pageHeight * dpr);
-
-                    // Set display CSS size
-                    canvas.style.width = pageWidth + 'px';
-                    canvas.style.height = pageHeight + 'px';
-
-                    pageWrapper.appendChild(canvas);
-                    container.appendChild(pageWrapper);
-
-                    const renderContext = {
-                        canvasContext: ctx,
-                        transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null,
-                        viewport: viewport,
-                    };
-                    await page.render(renderContext).promise;
-                }
-            }).catch(function(err) {
-                console.error('PDF.js render error:', err);
-                if (loadingEl) {
-                    loadingEl.innerHTML = `
-                        <div style="text-align: center; color: var(--text-secondary); max-width: 320px;">
-                            <i class="fas fa-file-pdf" style="font-size: 40px; color: var(--accent); margin-bottom: 12px; display: block;"></i>
-                            <p style="font-size: 14px; margin-bottom: 16px;">Tidak dapat merender pratinjau PDF di browser ini.</p>
-                            <a href="{{ route('files.sharedDownload', $file->share_token) }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px;">
-                                <i class="fas fa-download"></i> Download File
-                            </a>
-                        </div>
-                    `;
-                }
-            });
-        })();
-        @endif
     </script>
 </body>
 </html>

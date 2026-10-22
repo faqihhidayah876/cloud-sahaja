@@ -605,6 +605,7 @@ class FileController extends Controller
         return response()->file($path, [
             'Content-Type' => $mime,
             'Content-Disposition' => 'inline; filename="' . addslashes($file->original_name) . '"',
+            'X-Frame-Options' => 'ALLOWALL', // Izinkan render di iframe
         ]);
     }
 
@@ -641,6 +642,7 @@ class FileController extends Controller
         return response()->file($path, [
             'Content-Type' => $mime,
             'Content-Disposition' => 'inline; filename="' . addslashes($file->original_name) . '"',
+            'X-Frame-Options' => 'ALLOWALL', // Izinkan render di iframe
         ]);
     }
 

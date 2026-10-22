@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+@endpush
+
 @section('title', ($category === 'trash' ? 'Sampah' : ($category === 'starred' ? 'Favorit' : 'File Saya')) . ' — Cloud Sahaja')
 @section('page-title', $category === 'trash' ? 'Sampah' : ($category === 'starred' ? 'Favorit' : 'File Saya'))
 
@@ -387,41 +391,45 @@
 
 {{-- Modal: Share --}}
 <div class="modal-overlay" id="shareModal">
-    <div class="modal-content" style="max-width: 480px;">
+    <div class="modal-content" style="max-width: 520px;">
         <div class="modal-icon" style="background: var(--accent-subtle); color: var(--accent);">
             <i class="fas fa-share-nodes"></i>
         </div>
         <h3 class="modal-title">Bagikan File</h3>
-        <p class="modal-text">Siapa saja yang memiliki link ini dapat mengunduh file.</p>
+        <p class="modal-text">Siapa saja yang memiliki link atau QR Code ini dapat mengunduh file.</p>
+        
+        <div style="display: flex; gap: 20px; margin: 20px 0; text-align: left;" class="share-modal-body">
+            <!-- Kolom Kiri: Link & Expiry -->
+            <div style="flex: 1.2;">
+                <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Kadaluarsa Link</label>
+                <select id="shareExpiry" class="input" style="height: 40px; cursor: pointer; margin-bottom: 16px;">
+                    <option value="never">Tidak pernah</option>
+                    <option value="1h">1 jam</option>
+                    <option value="1d">1 hari</option>
+                    <option value="7d">7 hari</option>
+                    <option value="30d">30 hari</option>
+                </select>
 
-        <div style="margin: 16px 0; text-align: left;">
-            <label style="font-size: 13px; color: var(--text-secondary);
-                          display: block; margin-bottom: 6px;">
-                Kadaluarsa Link
-            </label>
-            <select id="shareExpiry" class="input" style="height: 44px; cursor: pointer;">
-                <option value="never">Tidak pernah</option>
-                <option value="1h">1 jam</option>
-                <option value="1d">1 hari</option>
-                <option value="7d">7 hari</option>
-                <option value="30d">30 hari</option>
-            </select>
+                <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 6px;">Tautan</label>
+                <div style="display: flex; gap: 6px;">
+                    <input type="text" id="shareLinkInput" class="input" readonly style="font-size: 12px; flex: 1; height: 40px;">
+                    <button class="btn btn-primary" onclick="copyShareLink()" style="flex-shrink: 0; height: 40px; padding: 0 12px;">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <p id="shareExpiryInfo" style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
+                    Link aktif selamanya
+                </p>
+            </div>
+
+            <!-- Kolom Kanan: QR Code -->
+            <div class="share-qr-col" style="flex: 0.8; display: flex; flex-direction: column; align-items: center; justify-content: center; border-left: 1px solid var(--border-subtle); padding-left: 20px;">
+                <label style="font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 10px;">QR Code</label>
+                <div id="qrcode" style="background: #fff; padding: 8px; border-radius: 8px; box-shadow: var(--shadow-sm);"></div>
+            </div>
         </div>
-
-        <div style="display: flex; gap: 8px; margin: 16px 0;">
-            <input type="text" id="shareLinkInput" class="input" readonly
-                   style="font-size: 13px; flex: 1;">
-            <button class="btn btn-primary" onclick="copyShareLink()" style="flex-shrink: 0;">
-                <i class="far fa-copy"></i> Salin
-            </button>
-        </div>
-
-        <p id="shareExpiryInfo" style="font-size: 12px; color: var(--text-tertiary);
-                                       text-align: center; margin-bottom: 16px;">
-            Link aktif selamanya
-        </p>
-
-        <div class="modal-actions">
+        
+        <div class="modal-actions" style="margin-top: 10px;">
             <button class="btn btn-secondary" onclick="closeShareModal()">Tutup</button>
             <button class="btn btn-danger" onclick="unshareFile()">Cabut Link</button>
         </div>
@@ -856,14 +864,13 @@
     
     // ========== SHARE ==========
     let currentShareId = null;
+    let currentQrCode = null; // Variabel untuk menyimpan instance QR
     
     async function shareFile(id) {
         currentShareId = id;
         try {
             const expirySelect = document.getElementById('shareExpiry');
             if (expirySelect) expirySelect.value = 'never';
-            const info = document.getElementById('shareExpiryInfo');
-            if (info) info.textContent = 'Link aktif selamanya';
 
             const res = await fetch('/files/' + id + '/share', {
                 method: 'POST',
@@ -873,9 +880,31 @@
             
             if (data.success) {
                 document.getElementById('shareLinkInput').value = data.url;
+                
+                // Render QR Code
+                const qrContainer = document.getElementById('qrcode');
+                if (qrContainer) {
+                    qrContainer.innerHTML = ''; // Bersihkan QR sebelumnya
+                    if (typeof QRCode !== 'undefined') {
+                        currentQrCode = new QRCode(qrContainer, {
+                            text: data.url,
+                            width: 128,
+                            height: 128,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+                    }
+                }
+
+                // Update info expiry
+                const info = document.getElementById('shareExpiryInfo');
                 if (data.expires_human && info) {
                     info.textContent = 'Link kadaluarsa dalam ' + data.expires_human;
+                } else if (info) {
+                    info.textContent = 'Link aktif selamanya';
                 }
+
                 document.getElementById('shareModal').classList.add('show');
             } else {
                 showToast(data.message || 'Gagal membuat link', 'error');
@@ -1186,7 +1215,7 @@
                 spinner.remove();
                 body.innerHTML = '<div style="color: var(--text-secondary); text-align: center;"><i class="fas fa-file-pdf" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px; display: block;"></i>Gagal memuat dokumen PDF.</div>';
             };
-            iframe.src = url + '#toolbar=0&navpanes=0';
+            iframe.src = url + '#toolbar=1&navpanes=0';
             body.appendChild(iframe);
         } 
         else if (type === 'text') {

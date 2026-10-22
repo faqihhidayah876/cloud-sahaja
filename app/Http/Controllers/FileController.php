@@ -207,30 +207,52 @@ class FileController extends Controller
                 }
                 fclose($out);
 
-                // Setelah digabung, kita simpan permanen menggunakan logic yang ada di method store()
-                // Kita buat instance UploadedFile palsu dari file yang sudah digabung
+                // Gunakan Fileinfo untuk deteksi MIME yang lebih akurat
+                $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                $mimeType = $finfo->file($finalFilePath);
+
+                $userId = Auth::id();
+
+                $thumbnailName = null;
+                $thumbPath = null;
+                if ($request->filled('thumbnail_base64') && Str::startsWith($mimeType, 'image/')) {
+                    $thumbnailName = 'thumb_' . Str::uuid() . '.jpg';
+                    $userDir = storage_path('app/private/files/' . $userId);
+                    if (!file_exists($userDir)) {
+                        mkdir($userDir, 0775, true);
+                    }
+                    $thumbPath = $userDir . '/' . $thumbnailName;
+                    // Decode base64 dan simpan
+                    $imageParts = explode(";base64,", $request->thumbnail_base64);
+                    if (count($imageParts) == 2) {
+                        file_put_contents($thumbPath, base64_decode($imageParts[1]));
+                    }
+                }
+
                 $mergedFile = new \Illuminate\Http\UploadedFile(
                     $finalFilePath,
                     $fileName,
-                    mime_content_type($finalFilePath),
+                    $mimeType ?: 'application/octet-stream',
                     null,
-                    true // test mode
+                    true
                 );
 
                 // Panggil logic store bawaan (atau pindahkan logic store ke method helper)
                 // Untuk simplifikasi, kita duplikasi logic validasi & penyimpanan di sini:
-                $userId = Auth::id();
                 $currentUsage = File::where('user_id', $userId)->whereNull('deleted_at')->where('is_folder', false)->sum('size');
                 $quota = Auth::user()->storage_quota;
                 $fileSize = $mergedFile->getSize();
 
                 if ($currentUsage + $fileSize > $quota) {
                     \Illuminate\Support\Facades\File::deleteDirectory($chunkDir);
+                    if ($thumbPath && file_exists($thumbPath)) {
+                        unlink($thumbPath);
+                    }
                     return response()->json(['success' => false, 'message' => 'Kuota penyimpanan tidak cukup.'], 400);
                 }
 
                 $extension = $mergedFile->getClientOriginalExtension();
-                $storedName = \Str::uuid() . ($extension ? '.' . $extension : '');
+                $storedName = Str::uuid() . ($extension ? '.' . $extension : '');
                 $path = 'files/' . $userId;
                 
                 // Pindahkan file gabungan ke folder private storage
@@ -241,6 +263,7 @@ class FileController extends Controller
                     'parent_id' => $request->parent_id,
                     'original_name' => $fileName,
                     'stored_name' => $storedName,
+                    'thumbnail_name' => $thumbnailName,
                     'mime_type' => $mergedFile->getMimeType(),
                     'size' => $fileSize,
                     'extension' => $extension,
@@ -583,6 +606,18 @@ class FileController extends Controller
             'Content-Type' => $mime,
             'Content-Disposition' => 'inline; filename="' . addslashes($file->original_name) . '"',
         ]);
+    }
+
+    /**
+     * Serve thumbnail gambar.
+     */
+    public function thumbnail($id)
+    {
+        $file = File::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        if (!$file->thumbnail_name || !file_exists(storage_path('app/private/files/' . $file->user_id . '/' . $file->thumbnail_name))) {
+            abort(404);
+        }
+        return response()->file(storage_path('app/private/files/' . $file->user_id . '/' . $file->thumbnail_name));
     }
 
     /**

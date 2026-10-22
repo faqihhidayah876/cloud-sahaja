@@ -168,10 +168,18 @@
                                 <i class="fas {{ $file->icon }}" style="color: {{ $file->icon_color }}; font-size: 52px;"></i>
                             </a>
                         @elseif($file->preview_type === 'image')
-                            <img src="{{ route('files.preview', $file->id) }}"
-                                 alt="{{ $file->original_name }}"
-                                 loading="lazy"
-                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            @if($file->thumbnail_name)
+                                <div class="img-wrapper">
+                                    <img src="{{ route('files.thumbnail', $file->id) }}" 
+                                         data-src="{{ route('files.preview', $file->id) }}" 
+                                         class="lazy-blur-img"
+                                         onload="loadHighRes(this)"
+                                         style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                                </div>
+                            @else
+                                <img src="{{ route('files.preview', $file->id) }}" 
+                                     style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            @endif
                         @elseif($file->preview_type === 'video')
                             <div class="video-preview-wrapper">
                                 <i class="fas {{ $file->icon }}" style="color: {{ $file->icon_color }}; font-size: 52px;"></i>
@@ -266,7 +274,7 @@
                                          onclick="downloadFile({{ $file->id }})"
                                      @endif>
                                     @if($file->preview_type === 'image')
-                                        <img src="{{ route('files.preview', $file->id) }}" alt="" class="files-list-thumb" loading="lazy">
+                                        <img src="{{ $file->thumbnail_name ? route('files.thumbnail', $file->id) : route('files.preview', $file->id) }}" alt="" class="files-list-thumb" loading="lazy">
                                     @else
                                         <i class="fas {{ $file->icon }} file-icon" style="color: {{ $file->icon_color }};"></i>
                                     @endif
@@ -650,20 +658,86 @@
             });
         });
         dropZone.addEventListener('drop', (e) => {
-            Array.from(e.dataTransfer.files).forEach(f => uploadFile(f));
+            addFilesToQueue(Array.from(e.dataTransfer.files));
         });
     }
     
     fileInput?.addEventListener('change', (e) => {
-        Array.from(e.target.files).forEach(f => uploadFile(f));
+        addFilesToQueue(Array.from(e.target.files));
         fileInput.value = '';
     });
     
     imageInput?.addEventListener('change', (e) => {
-        Array.from(e.target.files).forEach(f => uploadFile(f));
+        addFilesToQueue(Array.from(e.target.files));
         imageInput.value = '';
     });
     
+    // ========== UPLOAD QUEUE SYSTEM ==========
+    let uploadQueue = [];
+    let isUploading = false;
+
+    function addFilesToQueue(files) {
+        uploadQueue.push(...files);
+        if (!isUploading) {
+            processQueue();
+        }
+    }
+
+    async function processQueue() {
+        if (uploadQueue.length === 0) {
+            isUploading = false;
+            // Reload halaman jika semua antrean selesai dan tidak ada error
+            if (!document.querySelector('.upload-progress-item.error')) {
+                setTimeout(() => window.location.reload(), 1000);
+            }
+            return;
+        }
+
+        isUploading = true;
+        const file = uploadQueue.shift(); // Ambil file pertama di antrean
+        await uploadFile(file);           // Tunggu sampai file ini selesai
+        processQueue();                   // Lanjut ke file berikutnya
+    }
+
+    function loadHighRes(imgElement) {
+        if (imgElement.dataset.loaded) return;
+        imgElement.dataset.loaded = 'true';
+        
+        const highResUrl = imgElement.dataset.src;
+        const highResImage = new Image();
+        
+        highResImage.onload = () => {
+            imgElement.src = highResUrl;
+            imgElement.classList.remove('lazy-blur-img');
+            imgElement.classList.add('lazy-img-loaded');
+        };
+        highResImage.src = highResUrl;
+    }
+
+    function generateThumbnail(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX = 400; // Max width/height thumbnail
+                    let w = img.width, h = img.height;
+                    if (w > h && w > MAX) { h *= MAX / w; w = MAX; }
+                    else if (h > MAX) { w *= MAX / h; h = MAX; }
+                    
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.7)); // Kualitas 70%
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     async function uploadFile(file) {
         const progressId = 'progress-' + Date.now() + '-' + Math.random();
         const progressEl = document.createElement('div');
@@ -687,6 +761,11 @@
         const progressBar = progressEl.querySelector('.progress-bar-fill');
         const progressStatus = progressEl.querySelector('.progress-status');
 
+        let thumbnailBase64 = null;
+        if (file.type.startsWith('image/')) {
+            thumbnailBase64 = await generateThumbnail(file);
+        }
+
         try {
             for (let i = 0; i < totalChunks; i++) {
                 const start = i * CHUNK_SIZE;
@@ -700,6 +779,9 @@
                 formData.append('file_name', file.name);
                 formData.append('upload_id', uploadId);
                 if (CURRENT_FOLDER) formData.append('parent_id', CURRENT_FOLDER);
+                if (i === totalChunks - 1 && thumbnailBase64) {
+                    formData.append('thumbnail_base64', thumbnailBase64);
+                }
 
                 const response = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
@@ -729,12 +811,11 @@
 
             progressEl.classList.add('success');
             progressStatus.innerHTML = '<i class="fas fa-check"></i>';
-            setTimeout(() => { progressEl.remove(); window.location.reload(); }, 800);
+            setTimeout(() => { progressEl.remove(); }, 800);
 
         } catch (err) {
             progressEl.classList.add('error');
             progressStatus.innerHTML = '<i class="fas fa-times"></i> ' + (err.message || 'Gagal');
-            setTimeout(() => progressEl.remove(), 3000);
         }
     }
     
@@ -1024,6 +1105,7 @@
         currentPreviewType = type;
         
         document.getElementById('previewFileName').textContent = name;
+        document.getElementById('previewFileIcon').innerHTML = `<i class="fas ${type === 'pdf' ? 'fa-file-pdf' : (type === 'video' ? 'fa-file-video' : (type === 'image' ? 'fa-file-image' : 'fa-file'))}"></i>`;
         document.getElementById('previewDownloadBtn').href = '/files/' + id + '/download';
         
         renderPreview(id, type, name);
@@ -1104,7 +1186,7 @@
                 spinner.remove();
                 body.innerHTML = '<div style="color: var(--text-secondary); text-align: center;"><i class="fas fa-file-pdf" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px; display: block;"></i>Gagal memuat dokumen PDF.</div>';
             };
-            iframe.src = url + '#toolbar=1&navpanes=0';
+            iframe.src = url + '#toolbar=0&navpanes=0';
             body.appendChild(iframe);
         } 
         else if (type === 'text') {
@@ -1140,6 +1222,8 @@
         currentPreviewId = null;
         currentPreviewType = null;
         document.getElementById('previewBody').innerHTML = '';
+        const dropdown = document.getElementById('previewDropdown');
+        if (dropdown) dropdown.classList.remove('show');
     }
     
     function navigatePreview(delta) {
@@ -1154,6 +1238,10 @@
         currentPreviewId = f.id;
         currentPreviewType = f.preview_type;
         document.getElementById('previewFileName').textContent = f.name;
+        const iconEl = document.getElementById('previewFileIcon');
+        if (iconEl) {
+            iconEl.innerHTML = `<i class="fas ${f.preview_type === 'pdf' ? 'fa-file-pdf' : (f.preview_type === 'video' ? 'fa-file-video' : (f.preview_type === 'image' ? 'fa-file-image' : 'fa-file'))}"></i>`;
+        }
         document.getElementById('previewDownloadBtn').href = '/files/' + f.id + '/download';
         renderPreview(f.id, f.preview_type, f.name);
         updateNavButtons();
@@ -1189,6 +1277,20 @@
             }
         });
     }
+
+    function togglePreviewMenu(e) {
+        if (e) e.stopPropagation();
+        const dropdown = document.getElementById('previewDropdown');
+        if (dropdown) dropdown.classList.toggle('show');
+    }
+
+    // Tutup dropdown saat klik di luar
+    document.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('previewDropdown');
+        if (dropdown && dropdown.classList.contains('show') && !e.target.closest('.preview-kebab-wrapper')) {
+            dropdown.classList.remove('show');
+        }
+    });
 </script>
 @endpush
 @endsection

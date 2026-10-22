@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // File Actions by {id}
     Route::get('/files/{id}/preview', [FileController::class, 'preview'])->name('files.preview');
+    Route::get('/files/{id}/thumbnail', [FileController::class, 'thumbnail'])->name('files.thumbnail');
     Route::get('/files/{id}/siblings', [FileController::class, 'siblings'])->name('files.siblings');
     Route::get('/files/{id}/download', [FileController::class, 'download'])->name('files.download');
     Route::delete('/files/{id}', [FileController::class, 'destroy'])->name('files.destroy');

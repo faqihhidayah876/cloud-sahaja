@@ -16,6 +16,7 @@ class File extends Model
         'parent_id',
         'original_name',
         'stored_name',
+        'thumbnail_name',
         'mime_type',
         'size',
         'extension',
@@ -25,6 +26,12 @@ class File extends Model
         'is_folder',
         'is_starred',
     ];
+
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        if (!$this->thumbnail_name) return null;
+        return route('files.thumbnail', $this->id);
+    }
 
     protected $casts = [
         'is_public' => 'boolean',

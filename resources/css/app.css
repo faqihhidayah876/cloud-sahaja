@@ -8,7 +8,7 @@
     --accent-hover: #1E70D9;
     --accent-subtle: rgba(47, 128, 237, 0.1);
     --accent-border: rgba(47, 128, 237, 0.3);
-    
+
     --bg-base: #09090b; /* Hitam elegan */
     --bg-elevated: #18181b;
     --bg-subtle: #27272a;
@@ -2071,7 +2071,7 @@ body.light-mode .animated-bg-glow {
 }
 
 /* =====================================================================
-   Welcome Page Header (Fixed Glassmorphism) & Turnstile Responsive
+   Welcome Page Header — TRUE GLASSMORPHISM
    ===================================================================== */
 .site-header {
     position: fixed;
@@ -2079,19 +2079,30 @@ body.light-mode .animated-bg-glow {
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
     pointer-events: none;
 }
 
-:root.light-mode .site-header,
-html.light-mode .site-header,
-body.light-mode .site-header,
+/* ---- DARK MODE GLASS (sesuai welcome.blade kode #2) ---- */
 html:not(.light-mode) .site-header {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
+    background: rgba(6, 9, 19, 0.62) !important;
+    backdrop-filter: blur(22px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(200%) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ---- LIGHT MODE GLASS ---- */
+html.light-mode .site-header,
+body.light-mode .site-header {
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(22px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
 
 .header-icon-btn {
@@ -2547,12 +2558,12 @@ body.light-mode .header-icon-btn-primary:hover {
     .sticky-text { left: 50%; transform: translate(-50%, -50%); width: 100%; }
     .sticky-text.active { transform: translate(-50%, -50%); }
     .sticky-visual-wrapper { width: 100%; height: 250px; }
-    
+
     .bento-grid { grid-template-columns: 1fr; }
     .bento-large { grid-column: span 1; flex-direction: column; text-align: center; }
     .bento-large .bento-img { width: 100%; height: 150px; }
     .bento-wide { grid-column: span 1; }
-    
+
     .trust-grid { grid-template-columns: 1fr; gap: 32px; }
 }
 
@@ -2576,7 +2587,7 @@ body.light-mode .header-icon-btn-primary:hover {
 .auth-visual {
     flex: 1.15;
     height: 100vh;
-    background: linear-gradient(135deg, rgba(11, 13, 18, 0.9), rgba(30, 41, 59, 0.8)), 
+    background: linear-gradient(135deg, rgba(11, 13, 18, 0.9), rgba(30, 41, 59, 0.8)),
                 url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop') center/cover;
     padding: 44px;
     display: flex;
@@ -2879,7 +2890,7 @@ body.light-mode .header-icon-btn-primary:hover {
 }
 @media (prefers-color-scheme: light) {
     .auth-visual {
-        background: linear-gradient(135deg, rgba(250, 251, 252, 0.9), rgba(241, 243, 245, 0.8)), 
+        background: linear-gradient(135deg, rgba(250, 251, 252, 0.9), rgba(241, 243, 245, 0.8)),
                     url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop') center/cover;
         color: var(--text-primary);
     }
@@ -3201,7 +3212,7 @@ body {
         grid-template-columns: 1fr; /* Menumpuk vertikal di HP */
     }
     .bento-item.large { grid-row: auto; }
-    
+
     .editorial-actions {
         flex-direction: column;
         align-items: flex-start;
@@ -3224,30 +3235,100 @@ h1, h2, h3, .hero-title, .sticky-item h2 {
     font-style: italic !important;
 }
 
-/* --- 1. FIX NAVBAR GLASSMORPHISM --- */
+/* ============================================
+   STICKY NAVBAR — TRUE GLASSMORPHISM
+   ============================================ */
 .sticky-navbar {
     position: fixed;
-    top: 0; left: 0; width: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
     padding: 16px 48px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 9999;
-    
-    /* Efek Kaca Sejati Dark Mode */
-    background: rgba(11, 13, 18, 0.55) !important; 
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+
+    /* Layer 1 — Gradient tint (bukan flat color, kaca asli selalu bergradien) */
+    background: linear-gradient(
+        180deg,
+        rgba(20, 22, 28, 0.55) 0%,
+        rgba(14, 16, 22, 0.38) 100%
+    ) !important;
+
+    /* Layer 2 — Blur + saturasi tinggi: kunci "kaca basah" yang bikin warna di belakang pop */
+    backdrop-filter: blur(22px) saturate(200%) brightness(1.08) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(200%) brightness(1.08) !important;
+
+    /* Layer 3 — Tepi kaca: border bawah halus + top highlight */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+
+    /* Layer 4 — Depth shadow + inner highlight (pantulan cahaya di tepi atas kaca) */
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.04) !important;
 }
 
+/* Pantulan cahaya horizontal di tepi atas navbar (glass reflection) */
+.sticky-navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.35) 50%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ============================================
+   STICKY NAVBAR — LIGHT MODE GLASS
+   ============================================ */
 html.light-mode .sticky-navbar {
-    background: rgba(255, 255, 255, 0.6) !important;
-    backdrop-filter: blur(24px) saturate(190%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    /* Gradient putih lembut, lebih opaque sedikit agar teks gelap tetap terbaca */
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.62) 0%,
+        rgba(255, 255, 255, 0.42) 100%
+    ) !important;
+
+    backdrop-filter: blur(22px) saturate(180%) brightness(1.04) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(180%) brightness(1.04) !important;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.85) !important;
+
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 1),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light-mode .sticky-navbar::before {
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.95) 50%,
+        transparent 100%
+    );
+}
+
+/* ============================================
+   FALLBACK — Browser tanpa backdrop-filter
+   ============================================ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .sticky-navbar {
+        background: rgba(14, 16, 22, 0.88) !important;
+    }
+    html.light-mode .sticky-navbar {
+        background: rgba(255, 255, 255, 0.92) !important;
+    }
 }
 
 .navbar-logo { height: 44px; object-fit: contain; }
@@ -3259,22 +3340,22 @@ html.light-mode .sticky-navbar {
     justify-content: center;
     width: 40px; height: 40px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.06);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     color: var(--text-primary);
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none;
 }
 html.light-mode .nav-icon-btn, html.light-mode .nav-login-btn {
     color: #09090b !important;
-    background: rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.25) !important;
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
 }
 .nav-icon-btn:hover, .nav-login-btn:hover {
     background: var(--accent) !important;
@@ -3492,47 +3573,67 @@ html.light-mode .bento-card {
 @media (max-width: 900px) {
     .sticky-navbar { padding: 12px 20px; }
     .navbar-logo { height: 32px; }
-    
-    .hero-section { 
-        padding: 110px 20px 60px !important; 
-        text-align: center;
-        justify-content: center;
+
+    .hero-section {
+        padding: 120px 24px 80px !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        align-items: flex-start !important;
     }
     .hero-content {
-        margin: 0 auto;
+        margin: 0 !important;
+        max-width: 100% !important;
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start !important;
+        text-align: left !important;
     }
-    .hero-title { 
-        font-size: clamp(34px, 8vw, 44px) !important; 
-        line-height: 1.15 !important;
+    .hero-title {
+        font-size: clamp(46px, 12vw, 62px) !important;
+        line-height: 1.08 !important;
+        letter-spacing: -0.03em !important;
+        margin-bottom: 20px !important;
+    }
+    .hero-desc {
+        font-size: 17px !important;
+        line-height: 1.55 !important;
+        margin-bottom: 32px !important;
+        max-width: 100% !important;
+    }
+    .btn-editorial-primary {
+        padding: 16px 32px !important;
+        font-size: 16px !important;
+        align-self: flex-start !important;
     }
 
-    /* Video bumi tampil jelas di mobile */
+    /* Video bumi di mobile: jernih dan konsisten dengan laptop (split vertikal top-to-bottom) */
     .hero-video-container video {
-        object-position: center 30% !important;
-        opacity: 0.85 !important;
+        object-position: 70% 65% !important;
+        opacity: 0.75 !important;
     }
     html.light-mode .hero-video-container video {
-        opacity: 0.85 !important;
+        opacity: 0.8 !important;
     }
 
-    /* Overlay di mobile: tembus pandang melingkar agar bumi terlihat jelas di belakang teks */
+    /* Overlay mobile: transisi bersih dari atas ke bawah tanpa efek milky/foggy */
     .hero-video-overlay {
-        background: radial-gradient(
-            circle at center 40%,
-            rgba(9, 9, 11, 0.6) 0%,
-            rgba(9, 9, 11, 0.4) 55%,
-            rgba(9, 9, 11, 0.85) 100%
+        background: linear-gradient(
+            to bottom,
+            var(--bg-base) 0%,
+            var(--bg-base) 35%,
+            rgba(9, 9, 11, 0.82) 58%,
+            rgba(9, 9, 11, 0.25) 80%,
+            transparent 100%
         ) !important;
     }
     html.light-mode .hero-video-overlay {
-        background: radial-gradient(
-            circle at center 40%,
-            rgba(255, 255, 255, 0.72) 0%,
-            rgba(255, 255, 255, 0.45) 55%,
-            rgba(255, 255, 255, 0.85) 100%
+        background: linear-gradient(
+            to bottom,
+            #ffffff 0%,
+            #ffffff 35%,
+            rgba(255, 255, 255, 0.85) 58%,
+            rgba(255, 255, 255, 0.2) 80%,
+            transparent 100%
         ) !important;
     }
 
@@ -3550,9 +3651,9 @@ html.light-mode .bento-card {
 
     .bento-grid { grid-template-columns: 1fr !important; }
     .bento-card.large { grid-column: span 1 !important; }
-    
-    .why-us-grid { 
-        grid-template-columns: 1fr !important; 
+
+    .why-us-grid {
+        grid-template-columns: 1fr !important;
         text-align: center;
         gap: 32px !important;
     }
@@ -3561,8 +3662,8 @@ html.light-mode .bento-card {
     .mega-footer {
         padding: 60px 20px 32px !important;
     }
-    .footer-grid { 
-        grid-template-columns: 1fr !important; 
+    .footer-grid {
+        grid-template-columns: 1fr !important;
         text-align: left !important;
         align-items: flex-start !important;
         padding: 0 !important;
@@ -3570,27 +3671,27 @@ html.light-mode .bento-card {
         width: 100% !important;
         gap: 36px !important;
     }
-    .footer-col { 
-        align-items: flex-start !important; 
-        text-align: left !important; 
+    .footer-col {
+        align-items: flex-start !important;
+        text-align: left !important;
         padding: 0 !important;
         margin: 0 !important;
         width: 100% !important;
     }
-    .footer-col h4 { 
-        text-align: left !important; 
+    .footer-col h4 {
+        text-align: left !important;
         margin-bottom: 16px !important;
     }
-    .footer-col a { 
-        text-align: left !important; 
+    .footer-col a {
+        text-align: left !important;
         margin-bottom: 12px !important;
     }
     .footer-col p {
         text-align: left !important;
         max-width: 100% !important;
     }
-    .footer-col img { 
-        margin: 0 0 16px 0 !important; 
+    .footer-col img {
+        margin: 0 0 16px 0 !important;
         display: block !important;
     }
 

@@ -15,10 +15,84 @@
         }
     </script>
     @vite(['resources/css/app.css'])
+
+    {{-- ═══════════════════════════════════════════════════════════════
+         OVERRIDE CSS — GLASSMORPHISM & HERO LEFT-ALIGN
+         ═══════════════════════════════════════════════════════════════ --}}
+    <style>
+        /* 1. FIX HEADER GLASSMORPHISM (Hilangkan garis kasar) */
+        html:not(.light-mode) body .sticky-navbar {
+            background: linear-gradient(
+                180deg,
+                rgba(18, 22, 34, 0.5) 0%,
+                rgba(10, 13, 22, 0.35) 100%
+            ) !important;
+            backdrop-filter: blur(30px) saturate(200%) brightness(1.05) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(200%) brightness(1.05) !important;
+            /* HAPUS BORDER DAN GANTI DENGAN SHADOW LEMBUT */
+            border: none !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        html.light-mode body .sticky-navbar,
+        body.light-mode .sticky-navbar {
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.75) 0%,
+                rgba(255, 255, 255, 0.55) 100%
+            ) !important;
+            backdrop-filter: blur(30px) saturate(180%) brightness(1.02) !important;
+            -webkit-backdrop-filter: blur(30px) saturate(180%) brightness(1.02) !important;
+            /* HAPUS BORDER DAN GANTI DENGAN SHADOW LEMBUT */
+            border: none !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05) !important;
+        }
+
+        /* 2. FIX HERO SECTION JADI RATA KIRI (DESKTOP) */
+        .hero-section {
+            justify-content: flex-start !important; /* Pindah ke kiri */
+            text-align: left !important;
+        }
+
+        .hero-content {
+            margin: 0 !important; /* Hilangkan auto margin tengah */
+            text-align: left !important;
+            max-width: 700px;
+        }
+
+        .hero-desc {
+            margin: 0 0 40px 0 !important; /* Margin bawah saja, kiri-kanan 0 */
+        }
+
+        .hero-actions {
+            justify-content: flex-start !important; /* Tombol ke kiri */
+        }
+
+        /* 3. Video Background Overlay (Agar video lebih menyatu dengan teks) */
+        .hero-video-overlay {
+            background: linear-gradient(
+                to right,
+                var(--bg-base) 0%,
+                var(--bg-base) 30%,
+                rgba(9, 9, 11, 0.6) 60%,
+                transparent 100%
+            ) !important;
+        }
+
+        html.light-mode .hero-video-overlay {
+            background: linear-gradient(
+                to right,
+                #ffffff 0%,
+                #ffffff 30%,
+                rgba(255, 255, 255, 0.8) 60%,
+                transparent 100%
+            ) !important;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- STICKY NAVBAR -->
+    <!-- STICKY NAVBAR (Glassmorphism) -->
     <nav class="sticky-navbar">
         <a href="{{ route('welcome') }}">
             <img src="https://cdn.dbimg.app/FK7NFNaM.png" alt="Cloud Sahaja" class="navbar-logo">
@@ -37,22 +111,26 @@
         </div>
     </nav>
 
-    <!-- HERO SECTION (Video Bumi) -->
+    <!-- HERO SECTION (Video Bumi Baru) -->
     <section class="hero-section" style="position: relative; min-height: 100vh; display: flex; align-items: center; padding: 120px 48px;">
         <div class="hero-video-container">
-            <!-- Video Bumi ringan dari Coverr/Pexels -->
+            <!-- Link Video Bumi Baru (Pexels - Pasti Jalan) -->
             <video autoplay loop muted playsinline poster="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop">
-                <source src="https://cdn.coverr.co/videos/coverr-the-earth-from-space-1573/1080p.mp4" type="video/mp4">
+                <source src="https://videos.pexels.com/video-files/3129671/3129671-uhd_2560_1440_30fps.mp4" type="video/mp4">
             </video>
             <div class="hero-video-overlay"></div>
         </div>
 
-        <div class="hero-content" style="position: relative; z-index: 5; max-width: 700px;">
+        <div class="hero-content" style="position: relative; z-index: 5;">
             <h1 class="hero-title" style="font-size: clamp(48px, 6vw, 80px); font-weight: 700; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 24px;">
                 Simpan Data.<br><span class="serif-italic" style="font-family: var(--font-serif); font-style: italic; color: var(--accent);">Akses</span> Tanpa Batas.
             </h1>
-            <p style="font-size: 18px; color: var(--text-secondary); max-width: 500px; margin-bottom: 40px; line-height: 1.6;">Penyimpanan awan pribadi yang dibangun untuk kecepatan, keamanan, dan privasi. Dibuat untuk mahasiswa, developer, dan tim kecil.</p>
-            <a href="{{ route('register') }}" class="btn-editorial-primary" style="padding: 16px 32px; font-size: 16px;">Mulai Gratis <i class="fas fa-arrow-right" style="margin-left:8px;"></i></a>
+            <p class="hero-desc" style="font-size: 18px; color: var(--text-secondary); max-width: 500px; line-height: 1.6;">
+                Penyimpanan awan pribadi yang dibangun untuk kecepatan, keamanan, dan privasi. Dibuat untuk mahasiswa, developer, dan tim kecil.
+            </p>
+            <div class="hero-actions" style="display: flex; gap: 16px;">
+                <a href="{{ route('register') }}" class="btn-editorial-primary" style="padding: 16px 32px; font-size: 16px; display: inline-flex; align-items: center;">Mulai Gratis <i class="fas fa-arrow-right" style="margin-left:8px;"></i></a>
+            </div>
         </div>
     </section>
 
@@ -83,7 +161,6 @@
             <h3>Dirancang untuk Performa,<br>Dibangun untuk Privasi.</h3>
         </div>
 
-        <!-- Fitur 01 (Teks Kiri, Gambar Kanan) -->
         <div class="showcase-row">
             <div class="showcase-text">
                 <span class="showcase-label">01 — Kecepatan Upload</span>
@@ -101,7 +178,6 @@
             </div>
         </div>
 
-        <!-- Fitur 02 (Gambar Kiri, Teks Kanan) -->
         <div class="showcase-row reverse">
             <div class="showcase-text">
                 <span class="showcase-label">02 — Keamanan Berlapis</span>
@@ -118,7 +194,6 @@
             </div>
         </div>
 
-        <!-- Fitur 03 (Teks Kiri, Gambar Kanan) -->
         <div class="showcase-row">
             <div class="showcase-text">
                 <span class="showcase-label">03 — Kolaborasi & Berbagi</span>
@@ -226,7 +301,6 @@
             if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
                 gsap.registerPlugin(ScrollTrigger);
 
-                // Animasi Parallax: Bumi bergerak lebih lambat di belakang saat di-scroll
                 gsap.to('.hero-video-container video', {
                     yPercent: 20,
                     ease: 'none',
@@ -238,7 +312,6 @@
                     }
                 });
 
-                // Tulisan hero bergeser lebih cepat ke atas saat scroll ke bawah
                 gsap.to('.hero-content', {
                     yPercent: -20,
                     opacity: 0.25,
@@ -259,7 +332,6 @@
             localStorage.setItem('cloud-sahaja-theme', isLight ? 'light' : 'dark');
             document.getElementById('themeIcon').className = isLight ? 'fas fa-sun' : 'fas fa-moon';
         }
-        // Sync icon on load
         if (localStorage.getItem('cloud-sahaja-theme') === 'light') {
             document.getElementById('themeIcon').className = 'fas fa-sun';
         }

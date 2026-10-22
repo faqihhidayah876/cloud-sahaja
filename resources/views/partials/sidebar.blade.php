@@ -1,11 +1,6 @@
 <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-        <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" 
-             alt="Cloud Sahaja" style="width: 28px; height: 28px; border-radius: 6px;">
-        <div style="flex: 1; margin-left: 10px;">
-            <div style="font-weight: 700; font-size: 15px; color: var(--text-primary);">Cloud Sahaja</div>
-            <div style="font-size: 11px; color: var(--text-tertiary);">Cloud Storage Pribadi</div>
-        </div>
+    <div class="sidebar-brand" style="justify-content: center; padding: 16px 0;">
+        <img src="https://cdn.dbimg.app/TVHxIiqe.png" alt="Cloud Sahaja" style="height: 40px; object-fit: contain;">
     </div>
     
     <nav class="sidebar-nav">

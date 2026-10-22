@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk — Cloud Sahaja</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://cdn.dbimg.app/TVHxIiqe.png">
+    <link href="https://fonts.bunny.net/css?family=outfit:300,400,500,600,700|instrument-serif:400,400i" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
         (function() {
@@ -21,10 +21,9 @@
 <body>
     <div class="auth-container">
         <!-- Sisi Kiri (Visual) -->
-        <div class="auth-visual">
+        <div class="auth-visual" style="background: linear-gradient(rgba(9, 9, 11, 0.8), rgba(9, 9, 11, 0.9)), url('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2000&auto=format&fit=crop') center/cover;">
             <div class="auth-visual-brand">
-                <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Logo">
-                <span>Cloud Sahaja</span>
+                <img src="https://cdn.dbimg.app/WborHsgI.png" alt="Cloud Sahaja">
             </div>
             <div class="auth-visual-content">
                 <h1>Simpan Data.<br>Akses Tanpa Batas.</h1>
@@ -41,7 +40,7 @@
 
             <div class="auth-form-box">
                 <div class="auth-header">
-                    <img src="https://i.ibb.co.com/jZZ0648R/Logo-SAHAJA-AI.png" alt="Cloud Sahaja Logo">
+                    <img src="https://cdn.dbimg.app/FK7NFNaM.png" alt="Cloud Sahaja" style="height: 60px; margin-bottom: 16px; object-fit: contain;">
                     <h2>Selamat Datang Kembali</h2>
                     <p>Masuk ke akun Cloud Sahaja Anda</p>
                 </div>

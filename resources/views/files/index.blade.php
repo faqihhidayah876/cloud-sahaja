@@ -226,25 +226,25 @@
                     {{-- Action Buttons --}}
                     <div class="file-actions">
                         @if($category === 'trash')
-                            <button class="icon-btn-sm" onclick="restoreFile({{ $file->id }})" title="Pulihkan">
+                            <button class="icon-btn-sm" onclick="event.stopPropagation(); restoreFile({{ $file->id }})" title="Pulihkan">
                                 <i class="fas fa-rotate-left"></i>
                             </button>
-                            <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="forceDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus Permanen">
+                            <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="event.stopPropagation(); forceDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus Permanen">
                                 <i class="fas fa-trash-can"></i>
                             </button>
                         @else
-                            <button class="icon-btn-sm star-btn-{{ $file->id }} {{ $file->is_starred ? 'starred' : '' }}" onclick="toggleStar({{ $file->id }}, this)" title="{{ $file->is_starred ? 'Hapus dari favorit' : 'Tandai favorit' }}">
+                            <button class="icon-btn-sm star-btn-{{ $file->id }} {{ $file->is_starred ? 'starred' : '' }}" onclick="event.stopPropagation(); toggleStar({{ $file->id }}, this)" title="{{ $file->is_starred ? 'Hapus dari favorit' : 'Tandai favorit' }}">
                                 <i class="{{ $file->is_starred ? 'fas' : 'far' }} fa-star"></i>
                             </button>
                             @if(!$file->is_folder)
-                                <button class="icon-btn-sm" onclick="shareFile({{ $file->id }})" title="Bagikan">
+                                <button class="icon-btn-sm" onclick="event.stopPropagation(); shareFile({{ $file->id }})" title="Bagikan">
                                     <i class="fas fa-share-nodes"></i>
                                 </button>
-                                <button class="icon-btn-sm" onclick="downloadFile({{ $file->id }})" title="Download">
+                                <button class="icon-btn-sm" onclick="event.stopPropagation(); downloadFile({{ $file->id }})" title="Download">
                                     <i class="fas fa-download"></i>
                                 </button>
                             @endif
-                            <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="confirmDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus">
+                            <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="event.stopPropagation(); confirmDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus">
                                 <i class="fas fa-trash-can"></i>
                             </button>
                         @endif
@@ -298,25 +298,25 @@
                             <td>
                                 <div class="files-list-actions">
                                     @if($category === 'trash')
-                                        <button class="icon-btn-sm" onclick="restoreFile({{ $file->id }})" title="Pulihkan">
+                                        <button class="icon-btn-sm" onclick="event.stopPropagation(); restoreFile({{ $file->id }})" title="Pulihkan">
                                             <i class="fas fa-rotate-left"></i>
                                         </button>
-                                        <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="forceDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus Permanen">
+                                        <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="event.stopPropagation(); forceDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus Permanen">
                                             <i class="fas fa-trash-can"></i>
                                         </button>
                                     @else
-                                        <button class="icon-btn-sm star-btn-{{ $file->id }} {{ $file->is_starred ? 'starred' : '' }}" onclick="toggleStar({{ $file->id }}, this)" title="{{ $file->is_starred ? 'Hapus dari favorit' : 'Tandai favorit' }}">
+                                        <button class="icon-btn-sm star-btn-{{ $file->id }} {{ $file->is_starred ? 'starred' : '' }}" onclick="event.stopPropagation(); toggleStar({{ $file->id }}, this)" title="{{ $file->is_starred ? 'Hapus dari favorit' : 'Tandai favorit' }}">
                                             <i class="{{ $file->is_starred ? 'fas' : 'far' }} fa-star"></i>
                                         </button>
                                         @if(!$file->is_folder)
-                                            <button class="icon-btn-sm" onclick="shareFile({{ $file->id }})" title="Bagikan">
+                                            <button class="icon-btn-sm" onclick="event.stopPropagation(); shareFile({{ $file->id }})" title="Bagikan">
                                                 <i class="fas fa-share-nodes"></i>
                                             </button>
-                                            <button class="icon-btn-sm" onclick="downloadFile({{ $file->id }})" title="Download">
+                                            <button class="icon-btn-sm" onclick="event.stopPropagation(); downloadFile({{ $file->id }})" title="Download">
                                                 <i class="fas fa-download"></i>
                                             </button>
                                         @endif
-                                        <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="confirmDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus">
+                                        <button class="icon-btn-sm danger" data-name="{{ $file->original_name }}" onclick="event.stopPropagation(); confirmDelete({{ $file->id }}, this.getAttribute('data-name'))" title="Hapus">
                                             <i class="fas fa-trash-can"></i>
                                         </button>
                                     @endif
@@ -1208,6 +1208,8 @@
         } 
         else if (type === 'pdf') {
             body.appendChild(spinner);
+            const container = document.createElement('div');
+            container.className = 'pdf-container';
             const iframe = document.createElement('iframe');
             iframe.className = 'preview-pdf';
             iframe.onload = () => { spinner.remove(); };
@@ -1215,8 +1217,9 @@
                 spinner.remove();
                 body.innerHTML = '<div style="color: var(--text-secondary); text-align: center;"><i class="fas fa-file-pdf" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px; display: block;"></i>Gagal memuat dokumen PDF.</div>';
             };
-            iframe.src = url + '#toolbar=1&navpanes=0';
-            body.appendChild(iframe);
+            iframe.src = url + '#toolbar=1&navpanes=0&view=FitH';
+            container.appendChild(iframe);
+            body.appendChild(container);
         } 
         else if (type === 'text') {
             body.appendChild(spinner);

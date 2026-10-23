@@ -42,7 +42,8 @@
             background: var(--bg-elevated);
             border-bottom: 1px solid var(--border-subtle);
             flex-shrink: 0;
-            z-index: 10;
+            z-index: 9999 !important;
+            position: relative;
         }
 
         .share-file-info {
@@ -98,8 +99,8 @@
         }
 
         .share-action-btn {
-            width: 40px;
-            height: 40px;
+            width: 44px !important;
+            height: 44px !important;
             border-radius: 50%;
             background: transparent;
             color: var(--text-secondary);
@@ -109,6 +110,13 @@
             cursor: pointer;
             border: none;
             transition: background 150ms, color 150ms;
+            position: relative;
+            z-index: 10000 !important;
+            pointer-events: auto !important;
+        }
+
+        .share-action-btn i {
+            padding: 10px;
         }
 
         .share-action-btn:hover {
@@ -128,7 +136,7 @@
             min-width: 160px;
             box-shadow: var(--shadow-lg);
             display: none;
-            z-index: 50;
+            z-index: 10001 !important;
         }
 
         .share-dropdown.show {
@@ -181,9 +189,18 @@
             display: block;
         }
 
-        .share-preview-area iframe {
+        /* Sembunyikan Native PDF Toolbar */
+        .pdf-container {
             width: 100%;
             height: 100%;
+            overflow: hidden; /* Memotong bagian atas yang keluar */
+            position: relative;
+        }
+
+        .pdf-container iframe {
+            width: 100%;
+            height: calc(100% + 50px); /* Tambah tinggi untuk kompensasi margin minus */
+            margin-top: -50px; /* Trik menarik iframe ke atas untuk menyembunyikan toolbar */
             border: none;
             background: #fff;
             pointer-events: auto !important;
@@ -340,9 +357,9 @@
             <video src="{{ route('files.sharedPreview', $file->share_token) }}" controls autoplay muted></video>
             
         @elseif($previewType === 'pdf')
-            <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0&view=FitH" 
-                    style="width: 100%; height: 100%; border: none; background: #fff; pointer-events: auto;">
-            </iframe>
+            <div class="pdf-container">
+                <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0&view=FitH"></iframe>
+            </div>
             
         @elseif($previewType === 'text')
             <div class="share-text-container">

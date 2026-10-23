@@ -428,14 +428,17 @@ class FileController extends Controller
      */
     public function showShared($token)
     {
-        $file = File::where('share_token', $token)->whereNull('deleted_at')->firstOrFail();
+        // Cari file, TANPA whereNull('deleted_at') agar file yang dihapus pun terdeteksi
+        $file = File::where('share_token', $token)->first();
 
-        if ($file->isShareExpired()) {
-            return response()->view('files.shared', compact('file'), 410);
+        // Jika token tidak ada (dicabut), file dihapus, atau expired
+        if (!$file || $file->trashed() || $file->isShareExpired()) {
+            // Tampilkan custom view error, bukan abort(410)
+            return response()->view('files.share-expired', [], 410);
         }
 
         if (!$file->existsOnDisk()) {
-            abort(404, 'File tidak tersedia.');
+            return response()->view('files.share-expired', [], 404);
         }
 
         return view('files.shared', compact('file'));
@@ -446,14 +449,14 @@ class FileController extends Controller
      */
     public function downloadShared($token)
     {
-        $file = File::where('share_token', $token)->whereNull('deleted_at')->firstOrFail();
+        $file = File::where('share_token', $token)->first();
 
-        if ($file->isShareExpired()) {
-            abort(410, 'Link sudah kadaluarsa.');
+        if (!$file || $file->trashed() || $file->isShareExpired()) {
+            return response()->view('files.share-expired', [], 410);
         }
 
         if (!$file->existsOnDisk()) {
-            abort(404, 'File tidak tersedia.');
+            return response()->view('files.share-expired', [], 404);
         }
 
         return Storage::disk('local')->download($file->storage_path, $file->original_name);
@@ -626,14 +629,14 @@ class FileController extends Controller
      */
     public function previewShared($token)
     {
-        $file = File::where('share_token', $token)->whereNull('deleted_at')->firstOrFail();
+        $file = File::where('share_token', $token)->first();
 
-        if ($file->isShareExpired()) {
-            abort(410, 'Link sudah kadaluarsa.');
+        if (!$file || $file->trashed() || $file->isShareExpired()) {
+            return response()->view('files.share-expired', [], 410);
         }
 
         if ($file->is_folder || !$file->existsOnDisk()) {
-            abort(404, 'File tidak ditemukan.');
+            return response()->view('files.share-expired', [], 404);
         }
 
         $path = Storage::disk('local')->path($file->storage_path);

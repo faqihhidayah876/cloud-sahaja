@@ -173,15 +173,16 @@
 
         /* Area Preview Full Screen */
         .share-preview-area {
+            position: relative;
             flex: 1;
             width: 100%;
+            max-width: 100vw; /* Kunci lebar maksimal */
             height: 100%;
-            position: relative;
-            background: #1e1e1e;
+            overflow: hidden !important; /* Cegah scrollbar horizontal bocor */
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            background: #1e1e1e;
             z-index: 1;
         }
 
@@ -193,18 +194,25 @@
         .pdf-container {
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Memotong bagian atas yang keluar */
+            max-width: 100%;
+            overflow: hidden;
             position: relative;
+            display: flex;
+            justify-content: center;
         }
 
         .pdf-container iframe {
             width: 100%;
-            height: calc(100% + 50px); /* Tambah tinggi untuk kompensasi margin minus */
-            margin-top: -50px; /* Trik menarik iframe ke atas untuk menyembunyikan toolbar */
+            height: 100%;
+            max-width: 100%;
             border: none;
-            background: #fff;
-            pointer-events: auto !important;
             display: block;
+            background: #fff;
+            position: absolute;
+            top: -50px; 
+            bottom: 0;
+            height: calc(100% + 50px);
+            pointer-events: auto !important;
         }
 
         /* PDF.js Viewer Styles */
@@ -349,7 +357,7 @@
     @php $previewType = $file->preview_type; @endphp
 
     <!-- Preview Area -->
-    <div class="share-preview-area {{ in_array($previewType, ['pdf', 'text']) ? 'has-scrollable' : '' }}">
+    <div class="share-preview-area {{ $previewType === 'text' ? 'has-scrollable' : '' }}">
         @if($previewType === 'image')
             <img src="{{ route('files.sharedPreview', $file->share_token) }}" alt="{{ $file->original_name }}">
             
@@ -358,7 +366,7 @@
             
         @elseif($previewType === 'pdf')
             <div class="pdf-container">
-                <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0&view=FitH"></iframe>
+                <iframe src="{{ route('files.sharedPreview', $file->share_token) }}#toolbar=1&navpanes=0&view=Fit"></iframe>
             </div>
             
         @elseif($previewType === 'text')

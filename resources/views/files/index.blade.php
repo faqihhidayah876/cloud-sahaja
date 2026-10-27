@@ -1217,7 +1217,7 @@
                 spinner.remove();
                 body.innerHTML = '<div style="color: var(--text-secondary); text-align: center;"><i class="fas fa-file-pdf" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px; display: block;"></i>Gagal memuat dokumen PDF.</div>';
             };
-            iframe.src = url + '#toolbar=1&navpanes=0&view=FitH';
+            iframe.src = url + '#toolbar=1&navpanes=0&view=Fit';
             container.appendChild(iframe);
             body.appendChild(container);
         } 
